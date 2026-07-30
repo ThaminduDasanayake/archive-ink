@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import url("https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Caveat:wght@400..700&family=Inter:wght@300;400;500;600;700&display=swap");
+/*@import url("https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Caveat:wght@400..700&family=Inter:wght@300;400;500;600;700&display=swap");*/
 
 @layer base {
   :root {
@@ -10,8 +10,8 @@
 
   body {
     font-family: var(--font-inter);
-    background-color: #0b0f19;
-    color: #f3f4f6;
+    background-color: #f8fafc;
+    color: #0f172a;
     overflow-x: hidden;
   }
 }
@@ -25,126 +25,129 @@
   font-family: var(--font-architects);
 }
 
-/* Notebook Line Paper Texture */
+/* Notebook Line & Grid Paper Textures - Light Theme */
+.paper-lined,
 .paper-lined-dark {
-  background-color: #121827;
+  background-color: #ffffff;
   background-image: linear-gradient(
     to bottom,
     transparent 0px,
     transparent 27px,
-    rgba(255, 255, 255, 0.05) 28px
+    rgba(226, 232, 240, 0.8) 28px
   );
   background-size: 100% 28px;
   line-height: 28px;
 }
 
+.paper-grid,
 .paper-grid-dark {
-  background-color: #111827;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-color: #ffffff;
+  background-image: radial-gradient(rgba(148, 163, 184, 0.25) 1.2px, transparent 1.2px);
   background-size: 20px 20px;
 }
 
-/* Custom Scrollbars */
+/* Custom Scrollbars - Light Theme */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(241, 245, 249, 0.8);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(203, 213, 225, 0.9);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(148, 163, 184, 1);
 }
 
-/* Heatmap Theme Color Definitions */
+/* Heatmap Theme Color Definitions - Light Theme */
 /* Emerald Scheme */
 .bg-heatmap-emerald-0 {
-  background-color: #161e2e;
+  background-color: #f1f5f9;
 }
 .bg-heatmap-emerald-1 {
-  background-color: #064e3b;
+  background-color: #a7f3d0;
 }
 .bg-heatmap-emerald-2 {
-  background-color: #047857;
+  background-color: #34d399;
 }
 .bg-heatmap-emerald-3 {
   background-color: #10b981;
 }
 .bg-heatmap-emerald-4 {
-  background-color: #34d399;
+  background-color: #047857;
 }
 
 /* Violet Scheme */
 .bg-heatmap-violet-0 {
-  background-color: #1e1b2e;
+  background-color: #f1f5f9;
 }
 .bg-heatmap-violet-1 {
-  background-color: #4c1d95;
+  background-color: #ddd6fe;
 }
 .bg-heatmap-violet-2 {
-  background-color: #6d28d9;
+  background-color: #a78bfa;
 }
 .bg-heatmap-violet-3 {
   background-color: #8b5cf6;
 }
 .bg-heatmap-violet-4 {
-  background-color: #a78bfa;
+  background-color: #6d28d9;
 }
 
 /* Amber Scheme */
 .bg-heatmap-amber-0 {
-  background-color: #261c14;
+  background-color: #f1f5f9;
 }
 .bg-heatmap-amber-1 {
-  background-color: #78350f;
+  background-color: #fef08a;
 }
 .bg-heatmap-amber-2 {
-  background-color: #b45309;
+  background-color: #fde047;
 }
 .bg-heatmap-amber-3 {
   background-color: #f59e0b;
 }
 .bg-heatmap-amber-4 {
-  background-color: #fbbf24;
+  background-color: #b45309;
 }
 
 /* Sky Scheme */
 .bg-heatmap-sky-0 {
-  background-color: #0f1c2e;
+  background-color: #f1f5f9;
 }
 .bg-heatmap-sky-1 {
-  background-color: #0c4a6e;
+  background-color: #bae6fd;
 }
 .bg-heatmap-sky-2 {
-  background-color: #0369a1;
+  background-color: #38bdf8;
 }
 .bg-heatmap-sky-3 {
   background-color: #0ea5e9;
 }
 .bg-heatmap-sky-4 {
-  background-color: #38bdf8;
+  background-color: #0369a1;
 }
 
 /* Rose Scheme */
 .bg-heatmap-rose-0 {
-  background-color: #29121a;
+  background-color: #f1f5f9;
 }
 .bg-heatmap-rose-1 {
-  background-color: #881337;
+  background-color: #fecdd3;
 }
 .bg-heatmap-rose-2 {
-  background-color: #be123c;
+  background-color: #fb7185;
 }
 .bg-heatmap-rose-3 {
   background-color: #f43f5e;
 }
 .bg-heatmap-rose-4 {
-  background-color: #fb7185;
+  background-color: #be123c;
 }
+

@@ -113,24 +113,24 @@ export function PaperEditor({ note, onSaveNote, onDeleteNote, onClose }: PaperEd
         : "font-sans text-base leading-relaxed";
 
   return (
-    <div className="flex h-[calc(100vh-6rem)] flex-col overflow-hidden rounded-2xl border border-gray-800/80 bg-[#0f1524] shadow-2xl">
+    <div className="flex h-[calc(100vh-6rem)] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
       {/* Top Toolbar */}
-      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-gray-800/80 bg-[#0d121f] px-4 py-3">
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-slate-200/80 bg-slate-50/90 px-4 py-3">
         <div className="flex items-center space-x-3">
           <button
             onClick={onClose}
-            className="rounded-xl p-1.5 text-gray-400 transition hover:bg-gray-800 hover:text-white"
+            className="rounded-xl p-1.5 text-slate-400 transition hover:bg-slate-200/70 hover:text-slate-800"
             title="Back to Dashboard"
           >
             <X className="h-5 w-5" />
           </button>
           <div className="flex items-center space-x-2">
-            <Calendar className="h-4 w-4 text-emerald-400" />
+            <Calendar className="h-4 w-4 text-emerald-600" />
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="rounded-lg border border-gray-800 bg-gray-900 px-2.5 py-1 font-mono text-xs text-gray-200 focus:border-emerald-500 focus:outline-none"
+              className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 font-mono text-xs text-slate-700 focus:border-emerald-500 focus:outline-none"
             />
           </div>
         </div>
@@ -138,13 +138,13 @@ export function PaperEditor({ note, onSaveNote, onDeleteNote, onClose }: PaperEd
         {/* Font Switcher & Formatting Controls */}
         <div className="flex items-center space-x-2">
           {/* Font Selector */}
-          <div className="flex items-center rounded-xl border border-gray-800 bg-gray-900 p-0.5 font-mono text-xs">
+          <div className="flex items-center rounded-xl border border-slate-200 bg-white p-0.5 font-mono text-xs">
             <button
               onClick={() => setFontStyle("caveat")}
               className={`rounded-lg px-2.5 py-1 transition ${
                 fontStyle === "caveat"
-                  ? "bg-emerald-500/20 font-bold text-emerald-400"
-                  : "text-gray-400"
+                  ? "bg-emerald-50 font-bold text-emerald-700"
+                  : "text-slate-500 hover:text-slate-800"
               }`}
             >
               Script
@@ -153,8 +153,8 @@ export function PaperEditor({ note, onSaveNote, onDeleteNote, onClose }: PaperEd
               onClick={() => setFontStyle("architects")}
               className={`rounded-lg px-2.5 py-1 transition ${
                 fontStyle === "architects"
-                  ? "bg-emerald-500/20 font-bold text-emerald-400"
-                  : "text-gray-400"
+                  ? "bg-emerald-50 font-bold text-emerald-700"
+                  : "text-slate-500 hover:text-slate-800"
               }`}
             >
               Analog
@@ -163,8 +163,8 @@ export function PaperEditor({ note, onSaveNote, onDeleteNote, onClose }: PaperEd
               onClick={() => setFontStyle("sans")}
               className={`rounded-lg px-2.5 py-1 transition ${
                 fontStyle === "sans"
-                  ? "bg-emerald-500/20 font-bold text-emerald-400"
-                  : "text-gray-400"
+                  ? "bg-emerald-50 font-bold text-emerald-700"
+                  : "text-slate-500 hover:text-slate-800"
               }`}
             >
               Clean
@@ -172,45 +172,45 @@ export function PaperEditor({ note, onSaveNote, onDeleteNote, onClose }: PaperEd
           </div>
 
           {/* Formatting buttons */}
-          <div className="hidden items-center space-x-1 rounded-xl border border-gray-800 bg-gray-900 p-1 text-gray-400 sm:flex">
+          <div className="hidden items-center space-x-1 rounded-xl border border-slate-200 bg-white p-1 text-slate-500 sm:flex">
             <button
               onClick={() => insertFormatting("\n# ")}
-              className="rounded p-1 hover:bg-gray-800 hover:text-white"
+              className="rounded p-1 hover:bg-slate-100 hover:text-slate-900"
               title="Heading 1"
             >
               <Heading1 className="h-3.5 w-3.5" />
             </button>
             <button
               onClick={() => insertFormatting("\n## ")}
-              className="rounded p-1 hover:bg-gray-800 hover:text-white"
+              className="rounded p-1 hover:bg-slate-100 hover:text-slate-900"
               title="Heading 2"
             >
               <Heading2 className="h-3.5 w-3.5" />
             </button>
             <button
               onClick={() => insertFormatting("**bold text**")}
-              className="rounded p-1 hover:bg-gray-800 hover:text-white"
+              className="rounded p-1 hover:bg-slate-100 hover:text-slate-900"
               title="Bold"
             >
               <Bold className="h-3.5 w-3.5" />
             </button>
             <button
               onClick={() => insertFormatting("*italic text*")}
-              className="rounded p-1 hover:bg-gray-800 hover:text-white"
+              className="rounded p-1 hover:bg-slate-100 hover:text-slate-900"
               title="Italic"
             >
               <Italic className="h-3.5 w-3.5" />
             </button>
             <button
               onClick={() => insertFormatting("\n- ")}
-              className="rounded p-1 hover:bg-gray-800 hover:text-white"
+              className="rounded p-1 hover:bg-slate-100 hover:text-slate-900"
               title="Bullet List"
             >
               <List className="h-3.5 w-3.5" />
             </button>
             <button
               onClick={() => insertFormatting("\n> ")}
-              className="rounded p-1 hover:bg-gray-800 hover:text-white"
+              className="rounded p-1 hover:bg-slate-100 hover:text-slate-900"
               title="Quote"
             >
               <Quote className="h-3.5 w-3.5" />
@@ -220,7 +220,7 @@ export function PaperEditor({ note, onSaveNote, onDeleteNote, onClose }: PaperEd
           {/* Download Markdown */}
           <button
             onClick={handleDownloadMarkdown}
-            className="rounded-xl p-1.5 text-gray-400 transition hover:bg-gray-800 hover:text-emerald-400"
+            className="rounded-xl p-1.5 text-slate-500 transition hover:bg-slate-100 hover:text-emerald-600"
             title="Download Entry as .md File"
           >
             <Download className="h-4 w-4" />
@@ -230,7 +230,7 @@ export function PaperEditor({ note, onSaveNote, onDeleteNote, onClose }: PaperEd
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="flex items-center space-x-1.5 rounded-xl bg-emerald-600 px-3.5 py-1.5 text-xs font-semibold text-black shadow-lg transition hover:bg-emerald-500 disabled:opacity-50"
+            className="flex items-center space-x-1.5 rounded-xl bg-emerald-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs transition hover:bg-emerald-500 disabled:opacity-50"
           >
             {saveSuccess ? (
               <>
@@ -254,7 +254,7 @@ export function PaperEditor({ note, onSaveNote, onDeleteNote, onClose }: PaperEd
                   onClose();
                 }
               }}
-              className="rounded-xl p-1.5 text-gray-500 transition hover:bg-gray-800 hover:text-rose-400"
+              className="rounded-xl p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-rose-600"
               title="Delete Note"
             >
               <Trash2 className="h-4 w-4" />
@@ -264,7 +264,7 @@ export function PaperEditor({ note, onSaveNote, onDeleteNote, onClose }: PaperEd
       </div>
 
       {/* Editor Body with Prompt Widget */}
-      <div className="paper-lined-dark relative flex-1 overflow-y-auto p-4 text-gray-200 sm:p-8">
+      <div className="paper-lined relative flex-1 overflow-y-auto p-4 text-slate-800 sm:p-8">
         {/* Daily Inspiration Prompt Widget */}
         <JournalPromptWidget onInsertPrompt={handleInsertPrompt} />
 
@@ -274,7 +274,7 @@ export function PaperEditor({ note, onSaveNote, onDeleteNote, onClose }: PaperEd
           placeholder="Title of your journal entry..."
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="mb-6 w-full border-b border-gray-800/80 bg-transparent pb-3 font-mono text-2xl font-bold text-white placeholder-gray-600 transition focus:border-emerald-500 focus:outline-none"
+          className="mb-6 w-full border-b border-slate-200 bg-transparent pb-3 font-mono text-2xl font-bold text-slate-900 placeholder-slate-400 transition focus:border-emerald-500 focus:outline-none"
         />
 
         {/* Note Content Textarea */}
@@ -282,24 +282,24 @@ export function PaperEditor({ note, onSaveNote, onDeleteNote, onClose }: PaperEd
           placeholder="Write your daily thoughts, reflections, code snippets, or notes... (Use #hashtags to tag your entries)"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className={`min-h-[380px] w-full resize-none bg-transparent text-emerald-100 placeholder-gray-600 focus:outline-none ${fontClass}`}
+          className={`min-h-[380px] w-full resize-none bg-transparent text-slate-800 placeholder-slate-400 focus:outline-none ${fontClass}`}
         />
       </div>
 
       {/* Editor Footer */}
-      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-t border-gray-800/80 bg-[#0d121f] px-6 py-2.5 font-mono text-xs text-gray-400">
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-t border-slate-200/80 bg-slate-50/90 px-6 py-2.5 font-mono text-xs text-slate-500">
         <div className="flex items-center space-x-4">
           <div>
-            Word Count: <span className="font-bold text-emerald-400">{wordCount}</span> words
+            Word Count: <span className="font-bold text-emerald-700">{wordCount}</span> words
           </div>
           {tags.length > 0 && (
             <div className="flex items-center space-x-1">
-              <TagIcon className="h-3.5 w-3.5 text-emerald-400" />
+              <TagIcon className="h-3.5 w-3.5 text-emerald-600" />
               <div className="flex gap-1">
                 {tags.map((t) => (
                   <span
                     key={t}
-                    className="rounded border border-emerald-800/40 bg-emerald-950/60 px-1.5 py-0.5 text-[10px] text-emerald-400"
+                    className="rounded border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[10px] text-emerald-700"
                   >
                     #{t}
                   </span>
@@ -309,7 +309,7 @@ export function PaperEditor({ note, onSaveNote, onDeleteNote, onClose }: PaperEd
           )}
         </div>
 
-        <div className="text-[11px] text-gray-500">
+        <div className="text-[11px] text-slate-400">
           Markdown supported (# headers, - lists, *italics*, **bold**)
         </div>
       </div>

@@ -28,16 +28,16 @@ export function JournalPromptWidget({ onInsertPrompt }: JournalPromptWidgetProps
   };
 
   return (
-    <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-violet-800/40 bg-linear-to-r from-violet-950/40 via-purple-950/20 to-[#0f1524] p-3.5 shadow-lg">
+    <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-violet-200/80 bg-gradient-to-r from-violet-50/80 via-purple-50/50 to-white p-3.5 shadow-2xs">
       <div className="flex items-center space-x-3">
-        <div className="rounded-xl bg-violet-500/10 p-2 text-violet-400">
+        <div className="rounded-xl bg-violet-100 p-2 text-violet-600">
           <Sparkles className="h-4 w-4" />
         </div>
         <div>
-          <span className="block font-mono text-[10px] font-bold tracking-wider text-violet-400 uppercase">
+          <span className="block font-mono text-[10px] font-bold tracking-wider text-violet-700 uppercase">
             Daily Journal Inspiration
           </span>
-          <p className="font-handwritten text-xs text-violet-100 italic">
+          <p className="font-handwritten text-xs text-violet-950 italic">
             &quot;{currentPrompt}&quot;
           </p>
         </div>
@@ -47,7 +47,7 @@ export function JournalPromptWidget({ onInsertPrompt }: JournalPromptWidgetProps
         <button
           type="button"
           onClick={handleNextPrompt}
-          className="flex items-center gap-1 rounded-xl p-1.5 font-mono text-xs text-violet-300 transition hover:bg-violet-900/50 hover:text-white"
+          className="flex items-center gap-1 rounded-xl p-1.5 font-mono text-xs text-violet-700 transition hover:bg-violet-100/80 hover:text-violet-900"
           title="Shuffle Prompt"
         >
           <RefreshCw className="h-3.5 w-3.5" />
@@ -57,7 +57,7 @@ export function JournalPromptWidget({ onInsertPrompt }: JournalPromptWidgetProps
         <button
           type="button"
           onClick={() => onInsertPrompt(currentPrompt)}
-          className="flex items-center space-x-1.5 rounded-xl bg-violet-600 px-3 py-1.5 font-mono text-xs text-white shadow transition hover:bg-violet-500"
+          className="flex items-center space-x-1.5 rounded-xl bg-violet-600 px-3 py-1.5 font-mono text-xs text-white shadow-xs transition hover:bg-violet-500"
         >
           <PlusCircle className="h-3.5 w-3.5" />
           <span>Use Prompt</span>

@@ -6,39 +6,39 @@ import { PenTool, Github, Sparkles, Flame, Shield } from "lucide-react";
 
 export default function LoginPage() {
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0b0f19] p-4">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-50 p-4">
       {/* Background Ambient Glows */}
-      <div className="pointer-events-none absolute top-1/4 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-emerald-500/10 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-1/4 left-1/3 h-80 w-80 rounded-full bg-violet-500/10 blur-3xl" />
+      <div className="pointer-events-none absolute top-1/4 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-emerald-200/40 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-1/4 left-1/3 h-80 w-80 rounded-full bg-violet-200/40 blur-3xl" />
 
-      <div className="relative z-10 w-full max-w-md rounded-3xl border border-gray-800/80 bg-[#0d121f]/90 p-8 text-center shadow-2xl backdrop-blur-xl">
+      <div className="relative z-10 w-full max-w-md rounded-3xl border border-slate-200 bg-white/90 p-8 text-center shadow-2xl backdrop-blur-xl">
         {/* Brand Icon */}
-        <div className="mx-auto mb-6 h-16 w-16 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-cyan-400 p-0.5 shadow-xl shadow-emerald-950/50">
-          <div className="flex h-full w-full items-center justify-center rounded-[14px] bg-[#0b0f19]">
-            <PenTool className="h-8 w-8 text-emerald-400" />
+        <div className="mx-auto mb-6 h-16 w-16 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-cyan-400 p-0.5 shadow-xl shadow-emerald-200/60">
+          <div className="flex h-full w-full items-center justify-center rounded-[14px] bg-white">
+            <PenTool className="h-8 w-8 text-emerald-600" />
           </div>
         </div>
 
-        <h1 className="mb-2 font-mono text-2xl font-bold tracking-wider text-white">
-          ARCHIVE <span className="text-emerald-400">INK</span>
+        <h1 className="mb-2 font-mono text-2xl font-bold tracking-wider text-slate-900">
+          ARCHIVE <span className="text-emerald-600">INK</span>
         </h1>
-        <p className="mb-8 font-mono text-xs leading-relaxed text-gray-400">
+        <p className="mb-8 font-mono text-xs leading-relaxed text-slate-500">
           Your private daily journaling workspace. Track your writing velocity with interactive
           multi-color annual heatmaps.
         </p>
 
         {/* Features List */}
-        <div className="mb-8 space-y-3 rounded-2xl border border-gray-800/80 bg-gray-900/60 p-4 text-left font-mono text-xs text-gray-300">
+        <div className="mb-8 space-y-3 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 text-left font-mono text-xs text-slate-700">
           <div className="flex items-center space-x-2.5">
-            <Flame className="h-4 w-4 shrink-0 text-amber-400" />
+            <Flame className="h-4 w-4 shrink-0 text-amber-500" />
             <span>Interactive 52-week annual activity heatmaps</span>
           </div>
           <div className="flex items-center space-x-2.5">
-            <Sparkles className="h-4 w-4 shrink-0 text-violet-400" />
+            <Sparkles className="h-4 w-4 shrink-0 text-violet-600" />
             <span>Analog handwritten typography & lined paper texture</span>
           </div>
           <div className="flex items-center space-x-2.5">
-            <Shield className="h-4 w-4 shrink-0 text-emerald-400" />
+            <Shield className="h-4 w-4 shrink-0 text-emerald-600" />
             <span>Strictly private per-user data security</span>
           </div>
         </div>
@@ -47,7 +47,7 @@ export default function LoginPage() {
         <div className="space-y-3">
           <button
             onClick={() => signIn("google", { callbackUrl: "/" })}
-            className="flex w-full items-center justify-center space-x-3 rounded-xl bg-white px-4 py-3 text-xs font-semibold text-gray-900 shadow-lg transition hover:bg-gray-100"
+            className="flex w-full items-center justify-center space-x-3 rounded-xl border border-slate-300 bg-white px-4 py-3 text-xs font-semibold text-slate-800 shadow-xs transition hover:bg-slate-50"
           >
             <svg className="h-4 w-4" viewBox="0 0 24 24">
               <path
@@ -72,14 +72,14 @@ export default function LoginPage() {
 
           <button
             onClick={() => signIn("github", { callbackUrl: "/" })}
-            className="flex w-full items-center justify-center space-x-3 rounded-xl border border-gray-700 bg-gray-900 px-4 py-3 text-xs font-semibold text-white shadow-lg transition hover:bg-gray-800"
+            className="flex w-full items-center justify-center space-x-3 rounded-xl bg-slate-900 px-4 py-3 text-xs font-semibold text-white shadow-xs transition hover:bg-slate-800"
           >
             <Github className="h-4 w-4" />
             <span>Continue with GitHub</span>
           </button>
         </div>
 
-        <div className="mt-6 font-mono text-[11px] text-gray-400">
+        <div className="mt-6 font-mono text-[11px] text-slate-400">
           By signing in, you agree to keep your personal journal private and secure.
         </div>
       </div>

@@ -23,48 +23,48 @@ interface HeatmapGridProps {
 
 const COLOR_CLASSES: Record<string, string[]> = {
   emerald: [
-    "bg-[#131b2a] border-gray-800/40",
-    "bg-emerald-950/80 border-emerald-800/50 text-emerald-400",
-    "bg-emerald-800/90 border-emerald-600/60 text-emerald-200",
-    "bg-emerald-600 border-emerald-400 text-black",
-    "bg-emerald-400 border-emerald-200 text-black shadow-sm shadow-emerald-400/50",
+    "bg-slate-100 border-slate-200/80",
+    "bg-emerald-100 border-emerald-300 text-emerald-800",
+    "bg-emerald-300 border-emerald-400 text-emerald-950",
+    "bg-emerald-500 border-emerald-600 text-white",
+    "bg-emerald-700 border-emerald-800 text-white shadow-xs",
   ],
   violet: [
-    "bg-[#131b2a] border-gray-800/40",
-    "bg-violet-950/80 border-violet-800/50 text-violet-400",
-    "bg-violet-800/90 border-violet-600/60 text-violet-200",
-    "bg-violet-600 border-violet-400 text-black",
-    "bg-violet-400 border-violet-200 text-black shadow-sm shadow-violet-400/50",
+    "bg-slate-100 border-slate-200/80",
+    "bg-violet-100 border-violet-300 text-violet-800",
+    "bg-violet-300 border-violet-400 text-violet-950",
+    "bg-violet-500 border-violet-600 text-white",
+    "bg-violet-700 border-violet-800 text-white shadow-xs",
   ],
   amber: [
-    "bg-[#131b2a] border-gray-800/40",
-    "bg-amber-950/80 border-amber-800/50 text-amber-400",
-    "bg-amber-800/90 border-amber-600/60 text-amber-200",
-    "bg-amber-600 border-amber-400 text-black",
-    "bg-amber-400 border-amber-200 text-black shadow-sm shadow-amber-400/50",
+    "bg-slate-100 border-slate-200/80",
+    "bg-amber-100 border-amber-300 text-amber-800",
+    "bg-amber-300 border-amber-400 text-amber-950",
+    "bg-amber-500 border-amber-600 text-white",
+    "bg-amber-700 border-amber-800 text-white shadow-xs",
   ],
   sky: [
-    "bg-[#131b2a] border-gray-800/40",
-    "bg-sky-950/80 border-sky-800/50 text-sky-400",
-    "bg-sky-800/90 border-sky-600/60 text-sky-200",
-    "bg-sky-600 border-sky-400 text-black",
-    "bg-sky-400 border-sky-200 text-black shadow-sm shadow-sky-400/50",
+    "bg-slate-100 border-slate-200/80",
+    "bg-sky-100 border-sky-300 text-sky-800",
+    "bg-sky-300 border-sky-400 text-sky-950",
+    "bg-sky-500 border-sky-600 text-white",
+    "bg-sky-700 border-sky-800 text-white shadow-xs",
   ],
   rose: [
-    "bg-[#131b2a] border-gray-800/40",
-    "bg-rose-950/80 border-rose-800/50 text-rose-400",
-    "bg-rose-800/90 border-rose-600/60 text-rose-200",
-    "bg-rose-600 border-rose-400 text-black",
-    "bg-rose-400 border-rose-200 text-black shadow-sm shadow-rose-400/50",
+    "bg-slate-100 border-slate-200/80",
+    "bg-rose-100 border-rose-300 text-rose-800",
+    "bg-rose-300 border-rose-400 text-rose-950",
+    "bg-rose-500 border-rose-600 text-white",
+    "bg-rose-700 border-rose-800 text-white shadow-xs",
   ],
 };
 
 const THEME_ACCENTS: Record<string, string> = {
-  emerald: "text-emerald-400 border-emerald-500/30 bg-emerald-500/10",
-  violet: "text-violet-400 border-violet-500/30 bg-violet-500/10",
-  amber: "text-amber-400 border-amber-500/30 bg-amber-500/10",
-  sky: "text-sky-400 border-sky-500/30 bg-sky-500/10",
-  rose: "text-rose-400 border-rose-500/30 bg-rose-500/10",
+  emerald: "text-emerald-700 border-emerald-300 bg-emerald-50",
+  violet: "text-violet-700 border-violet-300 bg-violet-50",
+  amber: "text-amber-700 border-amber-300 bg-amber-50",
+  sky: "text-sky-700 border-sky-300 bg-sky-50",
+  rose: "text-rose-700 border-rose-300 bg-rose-50",
 };
 
 export function HeatmapGrid({
@@ -145,9 +145,9 @@ export function HeatmapGrid({
   const activeDays = useMemo(() => activities.filter((a) => a.count > 0).length, [activities]);
 
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-gray-800/80 bg-[#0f1524] p-4 shadow-xl sm:p-5">
+    <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
       {/* Tracker Header */}
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-gray-800/60 pb-3">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/80 pb-3">
         <div className="flex items-center space-x-2.5">
           <div
             className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-semibold tracking-wider uppercase ${accentClass}`}
@@ -155,15 +155,15 @@ export function HeatmapGrid({
             <Sparkles className="h-3.5 w-3.5" />
             {isDefault ? "Primary Track" : tag ? `#${tag}` : "Custom Track"}
           </div>
-          <h3 className="font-mono text-sm font-bold tracking-wide text-gray-100">{title}</h3>
+          <h3 className="font-mono text-sm font-bold tracking-wide text-slate-800">{title}</h3>
         </div>
 
-        <div className="flex items-center space-x-4 font-mono text-xs text-gray-400">
+        <div className="flex items-center space-x-4 font-mono text-xs text-slate-500">
           <div>
-            <span className="font-bold text-gray-200">{activeDays}</span> active days
+            <span className="font-bold text-slate-800">{activeDays}</span> active days
           </div>
           <div>
-            <span className="font-bold text-gray-200">{totalWords.toLocaleString()}</span> total
+            <span className="font-bold text-slate-800">{totalWords.toLocaleString()}</span> total
             count
           </div>
         </div>
@@ -173,7 +173,7 @@ export function HeatmapGrid({
       <div className="scrollbar-thin overflow-x-auto pb-2">
         <div className="min-w-180 select-none">
           {/* Month Labels */}
-          <div className="mb-1.5 flex pl-8 font-mono text-[10px] text-gray-400">
+          <div className="mb-1.5 flex pl-8 font-mono text-[10px] text-slate-500">
             {monthHeaders.map((m, idx) => (
               <div
                 key={idx}
@@ -191,7 +191,7 @@ export function HeatmapGrid({
           {/* Grid Layout (7 Rows x 52 Columns) */}
           <div className="flex gap-1">
             {/* Weekday Sidebar */}
-            <div className="flex flex-col justify-between py-0.5 pr-2 font-mono text-[9px] text-gray-500">
+            <div className="flex flex-col justify-between py-0.5 pr-2 font-mono text-[9px] text-slate-400">
               <span>Sun</span>
               <span>Mon</span>
               <span>Tue</span>
@@ -222,17 +222,17 @@ export function HeatmapGrid({
                         title={`${format(day.date, "EEEE, MMM d, yyyy")}: ${day.count} words / activity (${day.entryCount} entries)`}
                         className={`group/tile relative h-3 w-3 rounded-[3px] border transition-all duration-150 sm:h-3.5 sm:w-3.5 ${colorClass} ${
                           isSelected
-                            ? "z-10 scale-125 ring-2 ring-emerald-400"
-                            : "hover:z-10 hover:scale-125 hover:border-white/60"
+                            ? "z-10 scale-125 ring-2 ring-emerald-500"
+                            : "hover:z-10 hover:scale-125 hover:border-slate-400"
                         }`}
                       >
                         {/* Tooltip on hover */}
                         <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 hidden -translate-x-1/2 group-hover/tile:block">
-                          <div className="rounded-lg border border-gray-700 bg-gray-900 px-2.5 py-1 font-mono text-[10px] whitespace-nowrap text-gray-200 shadow-2xl">
-                            <p className="font-semibold text-emerald-400">
+                          <div className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 font-mono text-[10px] whitespace-nowrap text-slate-800 shadow-xl">
+                            <p className="font-semibold text-emerald-600">
                               {format(day.date, "MMM d, yyyy")}
                             </p>
-                            <p className="text-gray-300">
+                            <p className="text-slate-600">
                               {day.count} {day.count === 1 ? "word/unit" : "words/units"} •{" "}
                               {day.entryCount} {day.entryCount === 1 ? "entry" : "entries"}
                             </p>
@@ -249,7 +249,7 @@ export function HeatmapGrid({
       </div>
 
       {/* Heatmap Legend */}
-      <div className="mt-3 flex items-center justify-between border-t border-gray-800/40 pt-2 font-mono text-[11px] text-gray-400">
+      <div className="mt-3 flex items-center justify-between border-t border-slate-200/80 pt-2 font-mono text-[11px] text-slate-500">
         <span className="text-[10px]">Click any cell to filter notes or log activity</span>
         <div className="flex items-center space-x-1.5">
           <span className="mr-1 text-[10px]">Less</span>

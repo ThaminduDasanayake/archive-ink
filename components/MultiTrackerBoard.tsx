@@ -26,16 +26,16 @@ export function MultiTrackerBoard({
     <div className="mb-8 space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <Layers className="h-4 w-4 text-emerald-400" />
-          <h2 className="font-mono text-sm font-bold tracking-wide text-gray-200 uppercase">
+          <Layers className="h-4 w-4 text-emerald-600" />
+          <h2 className="font-mono text-sm font-bold tracking-wide text-slate-700 uppercase">
             Annual Activity Grids ({trackers.length})
           </h2>
         </div>
         <button
           onClick={onOpenCreateTracker}
-          className="flex items-center space-x-1.5 rounded-xl border border-gray-800 bg-gray-900 px-3 py-1.5 font-mono text-xs text-gray-200 transition hover:bg-gray-800"
+          className="flex items-center space-x-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 font-mono text-xs text-slate-700 shadow-2xs transition hover:bg-slate-50"
         >
-          <Plus className="h-3.5 w-3.5 text-emerald-400" />
+          <Plus className="h-3.5 w-3.5 text-emerald-600" />
           <span>Add Custom Heatmap</span>
         </button>
       </div>

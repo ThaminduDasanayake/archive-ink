@@ -241,7 +241,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#0b0f19] font-sans">
+    <div className="flex min-h-screen flex-col bg-slate-50 font-sans">
       <Navbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} onNewNote={handleNewNote} />
 
       <div className="flex flex-1 overflow-hidden">

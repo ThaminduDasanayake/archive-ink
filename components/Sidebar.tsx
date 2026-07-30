@@ -48,11 +48,11 @@ export function Sidebar({
   currentStreak,
 }: SidebarProps) {
   return (
-    <aside className="flex h-[calc(100vh-4rem)] w-64 shrink-0 flex-col justify-between overflow-y-auto border-r border-gray-800/80 bg-[#0d121f] p-4">
+    <aside className="flex h-[calc(100vh-4rem)] w-64 shrink-0 flex-col justify-between overflow-y-auto border-r border-slate-200/80 bg-white p-4">
       <div className="space-y-6">
         {/* Navigation Section */}
         <div>
-          <span className="mb-2 block font-mono text-[10px] font-bold tracking-wider text-gray-400 uppercase">
+          <span className="mb-2 block font-mono text-[10px] font-bold tracking-wider text-slate-400 uppercase">
             Workspace Views
           </span>
           <nav className="space-y-1">
@@ -63,8 +63,8 @@ export function Sidebar({
               }}
               className={`flex w-full items-center space-x-2.5 rounded-xl px-3 py-2 font-mono text-xs transition ${
                 activeView === "dashboard" && !selectedDate
-                  ? "border border-emerald-500/30 bg-emerald-500/10 font-semibold text-emerald-400"
-                  : "text-gray-400 hover:bg-gray-800/60 hover:text-gray-200"
+                  ? "border border-emerald-500/30 bg-emerald-50 font-semibold text-emerald-700"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
               <LayoutDashboard className="h-4 w-4" />
@@ -75,8 +75,8 @@ export function Sidebar({
               onClick={() => setActiveView("notes")}
               className={`flex w-full items-center space-x-2.5 rounded-xl px-3 py-2 font-mono text-xs transition ${
                 activeView === "notes"
-                  ? "border border-emerald-500/30 bg-emerald-500/10 font-semibold text-emerald-400"
-                  : "text-gray-400 hover:bg-gray-800/60 hover:text-gray-200"
+                  ? "border border-emerald-500/30 bg-emerald-50 font-semibold text-emerald-700"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
               <BookOpen className="h-4 w-4" />
@@ -87,14 +87,14 @@ export function Sidebar({
 
         {/* Date Filter Indicator if Active */}
         {selectedDate && (
-          <div className="flex items-center justify-between rounded-xl border border-emerald-800/60 bg-emerald-950/40 p-2.5">
-            <div className="flex items-center space-x-2 font-mono text-xs text-emerald-400">
+          <div className="flex items-center justify-between rounded-xl border border-emerald-300 bg-emerald-50 p-2.5">
+            <div className="flex items-center space-x-2 font-mono text-xs text-emerald-700">
               <Calendar className="h-3.5 w-3.5" />
               <span>Filtered: {selectedDate}</span>
             </div>
             <button
               onClick={() => setSelectedDate(null)}
-              className="font-mono text-[10px] text-gray-400 underline hover:text-white"
+              className="font-mono text-[10px] text-slate-500 underline hover:text-slate-800"
             >
               Reset
             </button>
@@ -104,14 +104,14 @@ export function Sidebar({
         {/* Trackers Heatmap Boards */}
         <div>
           <div className="mb-2 flex items-center justify-between">
-            <span className="flex items-center gap-1 font-mono text-[10px] font-bold tracking-wider text-gray-400 uppercase">
-              <Layers className="h-3 w-3 text-emerald-400" />
+            <span className="flex items-center gap-1 font-mono text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+              <Layers className="h-3 w-3 text-emerald-600" />
               Heatmap Trackers ({trackers.length})
             </span>
             <button
               onClick={onOpenCreateTracker}
               title="Add Custom Tracker Heatmap"
-              className="rounded-lg p-1 text-emerald-400 transition hover:bg-gray-800 hover:text-emerald-300"
+              className="rounded-lg p-1 text-emerald-600 transition hover:bg-slate-100 hover:text-emerald-700"
             >
               <PlusCircle className="h-4 w-4" />
             </button>
@@ -121,30 +121,30 @@ export function Sidebar({
             {trackers.map((t) => (
               <div
                 key={t.id}
-                className="group flex items-center justify-between rounded-xl border border-gray-800/60 bg-gray-900/60 px-3 py-2 font-mono text-xs text-gray-300 transition hover:border-gray-700"
+                className="group flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2 font-mono text-xs text-slate-700 transition hover:border-slate-300 hover:bg-slate-100"
               >
                 <div className="flex items-center space-x-2 truncate">
                   <div
                     className={`h-2.5 w-2.5 rounded-full ${
                       t.colorScheme === "violet"
-                        ? "bg-violet-400"
+                        ? "bg-violet-500"
                         : t.colorScheme === "amber"
-                          ? "bg-amber-400"
+                          ? "bg-amber-500"
                           : t.colorScheme === "sky"
-                            ? "bg-sky-400"
+                            ? "bg-sky-500"
                             : t.colorScheme === "rose"
-                              ? "bg-rose-400"
-                              : "bg-emerald-400"
+                              ? "bg-rose-500"
+                              : "bg-emerald-500"
                     }`}
                   />
                   <span className="truncate">{t.title}</span>
-                  {t.tag && <span className="text-[9px] text-gray-400">#{t.tag}</span>}
+                  {t.tag && <span className="text-[9px] text-slate-400">#{t.tag}</span>}
                 </div>
 
                 {!t.isDefault && (
                   <button
                     onClick={() => onDeleteTracker(t.id)}
-                    className="p-0.5 text-gray-500 opacity-0 transition group-hover:opacity-100 hover:text-rose-400"
+                    className="p-0.5 text-slate-400 opacity-0 transition group-hover:opacity-100 hover:text-rose-600"
                     title="Delete Tracker"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -157,8 +157,8 @@ export function Sidebar({
 
         {/* Tag Filters */}
         <div>
-          <span className="mb-2 flex items-center gap-1 font-mono text-[10px] font-bold tracking-wider text-gray-400 uppercase">
-            <Tag className="h-3 w-3 text-emerald-400" />
+          <span className="mb-2 flex items-center gap-1 font-mono text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+            <Tag className="h-3 w-3 text-emerald-600" />
             Hashtag Filters
           </span>
 
@@ -167,8 +167,8 @@ export function Sidebar({
               onClick={() => setSelectedTag(null)}
               className={`rounded-lg px-2.5 py-1 font-mono text-[11px] transition ${
                 selectedTag === null
-                  ? "border border-emerald-500/40 bg-emerald-500/20 text-emerald-400"
-                  : "border border-gray-800 bg-gray-900 text-gray-400 hover:text-gray-200"
+                  ? "border border-emerald-500/40 bg-emerald-100/70 font-semibold text-emerald-700"
+                  : "border border-slate-200 bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900"
               }`}
             >
               All Tags
@@ -179,8 +179,8 @@ export function Sidebar({
                 onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
                 className={`rounded-lg px-2.5 py-1 font-mono text-[11px] transition ${
                   selectedTag === tag
-                    ? "border border-emerald-500/40 bg-emerald-500/20 text-emerald-400"
-                    : "border border-gray-800 bg-gray-900 text-gray-400 hover:text-gray-200"
+                    ? "border border-emerald-500/40 bg-emerald-100/70 font-semibold text-emerald-700"
+                    : "border border-slate-200 bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900"
                 }`}
               >
                 #{tag}
@@ -191,16 +191,16 @@ export function Sidebar({
       </div>
 
       {/* Streak Badge Footer */}
-      <div className="border-t border-gray-800/80 pt-4">
-        <div className="flex items-center space-x-3 rounded-xl border border-amber-800/40 bg-gradient-to-r from-amber-950/30 to-orange-950/30 p-3">
-          <div className="rounded-xl bg-amber-500/20 p-2 text-amber-400">
-            <Flame className="h-5 w-5 fill-amber-400/30" />
+      <div className="border-t border-slate-200/80 pt-4">
+        <div className="flex items-center space-x-3 rounded-xl border border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 p-3 shadow-2xs">
+          <div className="rounded-xl bg-amber-100 p-2 text-amber-600">
+            <Flame className="h-5 w-5 fill-amber-500/30" />
           </div>
           <div>
-            <div className="font-mono text-xs font-bold text-amber-300">
+            <div className="font-mono text-xs font-bold text-amber-900">
               {currentStreak} Day Streak
             </div>
-            <div className="font-mono text-[10px] text-gray-400">
+            <div className="font-mono text-[10px] text-slate-500">
               {currentStreak > 0 ? "Keep writing daily!" : "Write a note today"}
             </div>
           </div>
