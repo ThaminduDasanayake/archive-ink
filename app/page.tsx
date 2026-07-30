@@ -1,65 +1,295 @@
-import Image from "next/image";
+"use client";
+
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { Navbar } from "@/components/Navbar";
+import { Sidebar, TrackerItem } from "@/components/Sidebar";
+import { MultiTrackerBoard } from "@/components/MultiTrackerBoard";
+import { StatsOverview } from "@/components/StatsOverview";
+import { NoteList, NoteItem } from "@/components/NoteList";
+import { PaperEditor, NoteData } from "@/components/PaperEditor";
+import { CreateTrackerModal } from "@/components/CreateTrackerModal";
+import { ActivityData } from "@/components/HeatmapGrid";
+import { getTodayDateString } from "@/lib/utils";
 
 export default function Home() {
+  const [activeView, setActiveView] = useState<"dashboard" | "editor" | "notes">("dashboard");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [editingNote, setEditingNote] = useState<NoteData | null>(null);
+  const [isCreateTrackerOpen, setIsCreateTrackerOpen] = useState(false);
+
+  // State data
+  const [notes, setNotes] = useState<NoteItem[]>([]);
+  const [trackers, setTrackers] = useState<TrackerItem[]>([]);
+  const [activitiesMap, setActivitiesMap] = useState<Record<string, ActivityData[]>>({});
+  const [stats, setStats] = useState({
+    currentStreak: 0,
+    longestStreak: 0,
+    totalWords: 0,
+    activeDaysCount: 0,
+  });
+
+  // Fetch Trackers
+  const fetchTrackers = useCallback(async () => {
+    try {
+      const res = await fetch("/api/trackers");
+      if (res.ok) {
+        const data = await res.json();
+        setTrackers(data);
+        // Fetch activity counts for each tracker
+        for (const t of data) {
+          fetchTrackerActivities(t.id);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch trackers", err);
+    }
+  }, []);
+
+  // Fetch Activities for a specific tracker
+  const fetchTrackerActivities = async (trackerId: string) => {
+    try {
+      const res = await fetch(`/api/activities?trackerId=${trackerId}`);
+      if (res.ok) {
+        const data = await res.json();
+        setActivitiesMap((prev) => ({ ...prev, [trackerId]: data }));
+      }
+    } catch (err) {
+      console.error("Failed to fetch activities", err);
+    }
+  };
+
+  // Fetch Notes
+  const fetchNotes = useCallback(async () => {
+    try {
+      let url = "/api/notes";
+      const params = new URLSearchParams();
+      if (selectedTag) params.set("tag", selectedTag);
+      if (selectedDate) params.set("date", selectedDate);
+      if (searchQuery) params.set("search", searchQuery);
+
+      if (params.toString()) url += `?${params.toString()}`;
+
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        setNotes(data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch notes", err);
+    }
+  }, [selectedTag, selectedDate, searchQuery]);
+
+  // Fetch Stats
+  const fetchStats = useCallback(async () => {
+    try {
+      const res = await fetch("/api/stats");
+      if (res.ok) {
+        const data = await res.json();
+        setStats(data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch stats", err);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchTrackers();
+    fetchStats();
+  }, [fetchTrackers, fetchStats]);
+
+  useEffect(() => {
+    fetchNotes();
+  }, [fetchNotes]);
+
+  // Extract all unique tags
+  const allTags = useMemo(() => {
+    const set = new Set<string>();
+    notes.forEach((n) => n.tags.forEach((t) => set.add(t)));
+    return Array.from(set);
+  }, [notes]);
+
+  // Actions
+  const handleNewNote = () => {
+    setEditingNote({
+      title: "",
+      content: "",
+      date: selectedDate || getTodayDateString(),
+      tags: [],
+      wordCount: 0,
+    });
+    setActiveView("editor");
+  };
+
+  const handleSaveNote = async (data: { id?: string; title: string; content: string; date: string }) => {
+    try {
+      const isUpdate = !!data.id;
+      const url = isUpdate ? `/api/notes/${data.id}` : "/api/notes";
+      const method = isUpdate ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (res.ok) {
+        const saved = await res.json();
+        setEditingNote(saved);
+        fetchNotes();
+        fetchTrackers();
+        fetchStats();
+      }
+    } catch (err) {
+      console.error("Save note failed", err);
+    }
+  };
+
+  const handleDeleteNote = async (id: string) => {
+    try {
+      const res = await fetch(`/api/notes/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        fetchNotes();
+        fetchTrackers();
+        fetchStats();
+        if (editingNote?.id === id) {
+          setEditingNote(null);
+          setActiveView("dashboard");
+        }
+      }
+    } catch (err) {
+      console.error("Delete note failed", err);
+    }
+  };
+
+  const handleCreateTracker = async (data: {
+    title: string;
+    tag?: string;
+    colorScheme: string;
+    metricType: string;
+  }) => {
+    try {
+      const res = await fetch("/api/trackers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (res.ok) {
+        fetchTrackers();
+      }
+    } catch (err) {
+      console.error("Create tracker failed", err);
+    }
+  };
+
+  const handleDeleteTracker = async (id: string) => {
+    if (confirm("Delete this activity heatmap tracker?")) {
+      try {
+        const res = await fetch(`/api/trackers/${id}`, { method: "DELETE" });
+        if (res.ok) {
+          fetchTrackers();
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
+
+  const handleCellClickToggle = async (trackerId: string, date: string) => {
+    try {
+      const res = await fetch("/api/activities", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ trackerId, date }),
+      });
+      if (res.ok) {
+        fetchTrackerActivities(trackerId);
+        fetchStats();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="min-h-screen bg-[#0b0f19] flex flex-col font-sans">
+      <Navbar
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        onNewNote={handleNewNote}
+      />
+
+      <div className="flex flex-1 overflow-hidden">
+        <Sidebar
+          activeView={activeView}
+          setActiveView={setActiveView}
+          trackers={trackers}
+          selectedTag={selectedTag}
+          setSelectedTag={setSelectedTag}
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+          allTags={allTags}
+          onOpenCreateTracker={() => setIsCreateTrackerOpen(true)}
+          onDeleteTracker={handleDeleteTracker}
+          currentStreak={stats.currentStreak}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+
+        {/* Main Content Area */}
+        <main className="flex-1 p-4 sm:p-6 overflow-y-auto max-w-7xl mx-auto w-full">
+          {activeView === "editor" ? (
+            <PaperEditor
+              note={editingNote}
+              onSaveNote={handleSaveNote}
+              onDeleteNote={handleDeleteNote}
+              onClose={() => setActiveView("dashboard")}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+          ) : (
+            <>
+              {/* Habit Streak Stats Overview */}
+              <StatsOverview
+                currentStreak={stats.currentStreak}
+                longestStreak={stats.longestStreak}
+                totalWords={stats.totalWords}
+                activeDaysCount={stats.activeDaysCount}
+              />
+
+              {/* Annual Multi-Tracker Heatmap Boards */}
+              <MultiTrackerBoard
+                trackers={trackers}
+                activitiesMap={activitiesMap}
+                selectedDate={selectedDate}
+                onSelectDate={(date) => {
+                  setSelectedDate(date);
+                  setActiveView("notes");
+                }}
+                onCellClickToggle={handleCellClickToggle}
+                onOpenCreateTracker={() => setIsCreateTrackerOpen(true)}
+              />
+
+              {/* Recent Notes Section */}
+              <NoteList
+                notes={notes}
+                onSelectNote={(note) => {
+                  setEditingNote(note);
+                  setActiveView("editor");
+                }}
+                onDeleteNote={handleDeleteNote}
+                onNewNote={handleNewNote}
+                selectedTag={selectedTag}
+                selectedDate={selectedDate}
+              />
+            </>
+          )}
+        </main>
+      </div>
+
+      {/* Modal for creating custom activity heatmap */}
+      <CreateTrackerModal
+        isOpen={isCreateTrackerOpen}
+        onClose={() => setIsCreateTrackerOpen(false)}
+        onCreateTracker={handleCreateTracker}
+      />
     </div>
   );
 }
