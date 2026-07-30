@@ -6,20 +6,19 @@ import {
   Trash2,
   Calendar,
   Tag as TagIcon,
-  Sparkles,
-  Type,
   Bold,
   Italic,
   List,
   Heading1,
   Heading2,
   Quote,
-  Code,
   CheckCircle,
   X,
-  BookOpen,
+  Download,
 } from "lucide-react";
-import { calculateWordCount, extractTags, getTodayDateString, formatDate } from "@/lib/utils";
+import confetti from "canvas-confetti";
+import { calculateWordCount, extractTags, getTodayDateString } from "@/lib/utils";
+import { JournalPromptWidget } from "./JournalPromptWidget";
 
 export interface NoteData {
   id?: string;
@@ -65,12 +64,42 @@ export function PaperEditor({ note, onSaveNote, onDeleteNote, onClose }: PaperEd
         date,
       });
       setSaveSuccess(true);
+      // Trigger subtle celebratory confetti burst
+      try {
+        confetti({
+          particleCount: 35,
+          spread: 60,
+          origin: { y: 0.8 },
+          colors: ["#10b981", "#8b5cf6", "#f59e0b"],
+        });
+      } catch (e) {
+        // Fallback if canvas-confetti environment is quiet
+      }
       setTimeout(() => setSaveSuccess(false), 2000);
     } catch (error) {
       console.error(error);
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleDownloadMarkdown = () => {
+    const filename = `${(title.trim() || "journal-entry").toLowerCase().replace(/[^a-z0-9]/g, "-")}.md`;
+    const markdownContent = `# ${title.trim() || "Journal Entry"}\n*Date: ${date}*\n\n${content}`;
+    const blob = new Blob([markdownContent], { type: "text/markdown;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleInsertPrompt = (promptText: string) => {
+    setContent((prev) => {
+      const prefix = prev.trim() ? `${prev}\n\n` : "";
+      return `${prefix}> **Journal Prompt**: *${promptText}*\n\n`;
+    });
   };
 
   const insertFormatting = (syntax: string) => {
@@ -137,7 +166,7 @@ export function PaperEditor({ note, onSaveNote, onDeleteNote, onClose }: PaperEd
             </button>
           </div>
 
-          {/* Quick Formatting */}
+          {/* Formatting buttons */}
           <div className="hidden sm:flex items-center space-x-1 bg-gray-900 border border-gray-800 rounded-xl p-1 text-gray-400">
             <button
               onClick={() => insertFormatting("\n# ")}
@@ -183,6 +212,15 @@ export function PaperEditor({ note, onSaveNote, onDeleteNote, onClose }: PaperEd
             </button>
           </div>
 
+          {/* Download Markdown */}
+          <button
+            onClick={handleDownloadMarkdown}
+            className="p-1.5 text-gray-400 hover:text-emerald-400 hover:bg-gray-800 rounded-xl transition"
+            title="Download Entry as .md File"
+          >
+            <Download className="w-4 h-4" />
+          </button>
+
           {/* Save Action */}
           <button
             onClick={handleSave}
@@ -220,15 +258,18 @@ export function PaperEditor({ note, onSaveNote, onDeleteNote, onClose }: PaperEd
         </div>
       </div>
 
-      {/* Editor Body (Analog Lined Paper Background) */}
-      <div className="flex-1 paper-lined-dark p-6 sm:p-10 overflow-y-auto relative text-gray-200">
+      {/* Editor Body with Prompt Widget */}
+      <div className="flex-1 paper-lined-dark p-4 sm:p-8 overflow-y-auto relative text-gray-200">
+        {/* Daily Inspiration Prompt Widget */}
+        <JournalPromptWidget onInsertPrompt={handleInsertPrompt} />
+
         {/* Title Input */}
         <input
           type="text"
           placeholder="Title of your journal entry..."
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className={`w-full bg-transparent border-b border-gray-800/80 pb-3 mb-6 text-2xl font-bold font-mono text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500 transition`}
+          className="w-full bg-transparent border-b border-gray-800/80 pb-3 mb-6 text-2xl font-bold font-mono text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500 transition"
         />
 
         {/* Note Content Textarea */}
@@ -236,7 +277,7 @@ export function PaperEditor({ note, onSaveNote, onDeleteNote, onClose }: PaperEd
           placeholder="Write your daily thoughts, reflections, code snippets, or notes... (Use #hashtags to tag your entries)"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className={`w-full min-h-[420px] bg-transparent resize-none focus:outline-none text-emerald-100 placeholder-gray-600 ${fontClass}`}
+          className={`w-full min-h-[380px] bg-transparent resize-none focus:outline-none text-emerald-100 placeholder-gray-600 ${fontClass}`}
         />
       </div>
 
