@@ -4,22 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="88fd4603-fff4-4023-86ed-02de8c2d53a7" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/api/notes/[id]/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/api/notes/[id]/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/login/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/login/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/CreateTrackerModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/CreateTrackerModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/HeatmapGrid.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/HeatmapGrid.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/JournalPromptWidget.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/JournalPromptWidget.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/MultiTrackerBoard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/MultiTrackerBoard.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/Navbar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/Navbar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/NoteList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/NoteList.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/PaperEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/PaperEditor.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/Sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/Sidebar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/StatsOverview.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/StatsOverview.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-    </list>
+    <list default="true" id="88fd4603-fff4-4023-86ed-02de8c2d53a7" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -95,7 +80,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1785432276631</updated>
-      <workItem from="1785432277726" duration="5616000" />
+      <workItem from="1785432277726" duration="6317000" />
     </task>
     <servers />
   </component>
