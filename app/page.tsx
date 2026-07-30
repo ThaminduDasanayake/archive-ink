@@ -122,7 +122,12 @@ export default function Home() {
     setActiveView("editor");
   };
 
-  const handleSaveNote = async (data: { id?: string; title: string; content: string; date: string }) => {
+  const handleSaveNote = async (data: {
+    id?: string;
+    title: string;
+    content: string;
+    date: string;
+  }) => {
     try {
       const isUpdate = !!data.id;
       const url = isUpdate ? `/api/notes/${data.id}` : "/api/notes";
@@ -213,12 +218,8 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0b0f19] flex flex-col font-sans">
-      <Navbar
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        onNewNote={handleNewNote}
-      />
+    <div className="flex min-h-screen flex-col bg-[#0b0f19] font-sans">
+      <Navbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} onNewNote={handleNewNote} />
 
       <div className="flex flex-1 overflow-hidden">
         <Sidebar
@@ -236,7 +237,7 @@ export default function Home() {
         />
 
         {/* Main Content Area */}
-        <main className="flex-1 p-4 sm:p-6 overflow-y-auto max-w-7xl mx-auto w-full">
+        <main className="mx-auto w-full max-w-7xl flex-1 overflow-y-auto p-4 sm:p-6">
           {activeView === "editor" ? (
             <PaperEditor
               note={editingNote}

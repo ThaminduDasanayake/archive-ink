@@ -6,10 +6,7 @@ import { calculateWordCount, extractTags } from "@/lib/utils";
 
 const DEMO_USER_ID = "demo-user-id";
 
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const note = await prisma.note.findUnique({
@@ -26,10 +23,7 @@ export async function GET(
   }
 }
 
-export async function PUT(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const session = await auth();
@@ -68,7 +62,8 @@ export async function PUT(
         });
 
         for (const tracker of userTrackers) {
-          const isMatched = tracker.isDefault || (tracker.tag && finalTags.includes(tracker.tag.toLowerCase()));
+          const isMatched =
+            tracker.isDefault || (tracker.tag && finalTags.includes(tracker.tag.toLowerCase()));
           if (isMatched) {
             await tx.dailyActivity.upsert({
               where: {
@@ -102,10 +97,7 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const session = await auth();
@@ -125,7 +117,9 @@ export async function DELETE(
       const userTrackers = await tx.tracker.findMany({ where: { userId } });
 
       for (const tracker of userTrackers) {
-        const isMatched = tracker.isDefault || (tracker.tag && existingNote.tags.includes(tracker.tag.toLowerCase()));
+        const isMatched =
+          tracker.isDefault ||
+          (tracker.tag && existingNote.tags.includes(tracker.tag.toLowerCase()));
         if (isMatched) {
           const activity = await tx.dailyActivity.findUnique({
             where: {

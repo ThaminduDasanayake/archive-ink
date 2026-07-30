@@ -1,11 +1,11 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Caveat:wght@400..700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Caveat:wght@400..700&family=Inter:wght@300;400;500;600;700&display=swap");
 
 @layer base {
   :root {
-    --font-inter: 'Inter', sans-serif;
-    --font-caveat: 'Caveat', cursive;
-    --font-architects: 'Architects Daughter', cursive;
+    --font-inter: "Inter", sans-serif;
+    --font-caveat: "Caveat", cursive;
+    --font-architects: "Architects Daughter", cursive;
   }
 
   body {
@@ -65,36 +65,86 @@
 
 /* Heatmap Theme Color Definitions */
 /* Emerald Scheme */
-.bg-heatmap-emerald-0 { background-color: #161e2e; }
-.bg-heatmap-emerald-1 { background-color: #064e3b; }
-.bg-heatmap-emerald-2 { background-color: #047857; }
-.bg-heatmap-emerald-3 { background-color: #10b981; }
-.bg-heatmap-emerald-4 { background-color: #34d399; }
+.bg-heatmap-emerald-0 {
+  background-color: #161e2e;
+}
+.bg-heatmap-emerald-1 {
+  background-color: #064e3b;
+}
+.bg-heatmap-emerald-2 {
+  background-color: #047857;
+}
+.bg-heatmap-emerald-3 {
+  background-color: #10b981;
+}
+.bg-heatmap-emerald-4 {
+  background-color: #34d399;
+}
 
 /* Violet Scheme */
-.bg-heatmap-violet-0 { background-color: #1e1b2e; }
-.bg-heatmap-violet-1 { background-color: #4c1d95; }
-.bg-heatmap-violet-2 { background-color: #6d28d9; }
-.bg-heatmap-violet-3 { background-color: #8b5cf6; }
-.bg-heatmap-violet-4 { background-color: #a78bfa; }
+.bg-heatmap-violet-0 {
+  background-color: #1e1b2e;
+}
+.bg-heatmap-violet-1 {
+  background-color: #4c1d95;
+}
+.bg-heatmap-violet-2 {
+  background-color: #6d28d9;
+}
+.bg-heatmap-violet-3 {
+  background-color: #8b5cf6;
+}
+.bg-heatmap-violet-4 {
+  background-color: #a78bfa;
+}
 
 /* Amber Scheme */
-.bg-heatmap-amber-0 { background-color: #261c14; }
-.bg-heatmap-amber-1 { background-color: #78350f; }
-.bg-heatmap-amber-2 { background-color: #b45309; }
-.bg-heatmap-amber-3 { background-color: #f59e0b; }
-.bg-heatmap-amber-4 { background-color: #fbbf24; }
+.bg-heatmap-amber-0 {
+  background-color: #261c14;
+}
+.bg-heatmap-amber-1 {
+  background-color: #78350f;
+}
+.bg-heatmap-amber-2 {
+  background-color: #b45309;
+}
+.bg-heatmap-amber-3 {
+  background-color: #f59e0b;
+}
+.bg-heatmap-amber-4 {
+  background-color: #fbbf24;
+}
 
 /* Sky Scheme */
-.bg-heatmap-sky-0 { background-color: #0f1c2e; }
-.bg-heatmap-sky-1 { background-color: #0c4a6e; }
-.bg-heatmap-sky-2 { background-color: #0369a1; }
-.bg-heatmap-sky-3 { background-color: #0ea5e9; }
-.bg-heatmap-sky-4 { background-color: #38bdf8; }
+.bg-heatmap-sky-0 {
+  background-color: #0f1c2e;
+}
+.bg-heatmap-sky-1 {
+  background-color: #0c4a6e;
+}
+.bg-heatmap-sky-2 {
+  background-color: #0369a1;
+}
+.bg-heatmap-sky-3 {
+  background-color: #0ea5e9;
+}
+.bg-heatmap-sky-4 {
+  background-color: #38bdf8;
+}
 
 /* Rose Scheme */
-.bg-heatmap-rose-0 { background-color: #29121a; }
-.bg-heatmap-rose-1 { background-color: #881337; }
-.bg-heatmap-rose-2 { background-color: #be123c; }
-.bg-heatmap-rose-3 { background-color: #f43f5e; }
-.bg-heatmap-rose-4 { background-color: #fb7185; }
+.bg-heatmap-rose-0 {
+  background-color: #29121a;
+}
+.bg-heatmap-rose-1 {
+  background-color: #881337;
+}
+.bg-heatmap-rose-2 {
+  background-color: #be123c;
+}
+.bg-heatmap-rose-3 {
+  background-color: #f43f5e;
+}
+.bg-heatmap-rose-4 {
+  background-color: #fb7185;
+}

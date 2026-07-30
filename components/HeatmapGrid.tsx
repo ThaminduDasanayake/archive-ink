@@ -142,40 +142,38 @@ export function HeatmapGrid({
     [activities]
   );
 
-  const activeDays = useMemo(
-    () => activities.filter((a) => a.count > 0).length,
-    [activities]
-  );
+  const activeDays = useMemo(() => activities.filter((a) => a.count > 0).length, [activities]);
 
   return (
-    <div className="bg-[#0f1524] border border-gray-800/80 rounded-2xl p-4 sm:p-5 shadow-xl relative overflow-hidden group">
+    <div className="group relative overflow-hidden rounded-2xl border border-gray-800/80 bg-[#0f1524] p-4 shadow-xl sm:p-5">
       {/* Tracker Header */}
-      <div className="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-gray-800/60">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-gray-800/60 pb-3">
         <div className="flex items-center space-x-2.5">
-          <div className={`px-2.5 py-1 rounded-lg border text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 ${accentClass}`}>
-            <Sparkles className="w-3.5 h-3.5" />
+          <div
+            className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-semibold tracking-wider uppercase ${accentClass}`}
+          >
+            <Sparkles className="h-3.5 w-3.5" />
             {isDefault ? "Primary Track" : tag ? `#${tag}` : "Custom Track"}
           </div>
-          <h3 className="text-sm font-bold text-gray-100 font-mono tracking-wide">
-            {title}
-          </h3>
+          <h3 className="font-mono text-sm font-bold tracking-wide text-gray-100">{title}</h3>
         </div>
 
-        <div className="flex items-center space-x-4 text-xs text-gray-400 font-mono">
+        <div className="flex items-center space-x-4 font-mono text-xs text-gray-400">
           <div>
-            <span className="text-gray-200 font-bold">{activeDays}</span> active days
+            <span className="font-bold text-gray-200">{activeDays}</span> active days
           </div>
           <div>
-            <span className="text-gray-200 font-bold">{totalWords.toLocaleString()}</span> total count
+            <span className="font-bold text-gray-200">{totalWords.toLocaleString()}</span> total
+            count
           </div>
         </div>
       </div>
 
       {/* Grid Container with Horizontal Scroll fallback */}
-      <div className="overflow-x-auto pb-2 scrollbar-thin">
+      <div className="scrollbar-thin overflow-x-auto pb-2">
         <div className="min-w-[720px] select-none">
           {/* Month Labels */}
-          <div className="flex text-[10px] text-gray-400 font-mono mb-1.5 pl-8">
+          <div className="mb-1.5 flex pl-8 font-mono text-[10px] text-gray-400">
             {monthHeaders.map((m, idx) => (
               <div
                 key={idx}
@@ -193,7 +191,7 @@ export function HeatmapGrid({
           {/* Grid Layout (7 Rows x 52 Columns) */}
           <div className="flex gap-1">
             {/* Weekday Sidebar */}
-            <div className="flex flex-col justify-between text-[9px] text-gray-500 font-mono pr-2 py-0.5">
+            <div className="flex flex-col justify-between py-0.5 pr-2 font-mono text-[9px] text-gray-500">
               <span>Sun</span>
               <span>Mon</span>
               <span>Tue</span>
@@ -204,7 +202,7 @@ export function HeatmapGrid({
             </div>
 
             {/* 52 Columns of Weeks */}
-            <div className="flex gap-1 flex-1">
+            <div className="flex flex-1 gap-1">
               {weeks.map((week, weekIdx) => (
                 <div key={weekIdx} className="flex flex-col gap-1">
                   {week.map((day) => {
@@ -222,20 +220,21 @@ export function HeatmapGrid({
                           }
                         }}
                         title={`${format(day.date, "EEEE, MMM d, yyyy")}: ${day.count} words / activity (${day.entryCount} entries)`}
-                        className={`w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-[3px] border transition-all duration-150 relative group/tile ${colorClass} ${
+                        className={`group/tile relative h-3 w-3 rounded-[3px] border transition-all duration-150 sm:h-3.5 sm:w-3.5 ${colorClass} ${
                           isSelected
-                            ? "ring-2 ring-emerald-400 scale-125 z-10"
-                            : "hover:scale-125 hover:z-10 hover:border-white/60"
+                            ? "z-10 scale-125 ring-2 ring-emerald-400"
+                            : "hover:z-10 hover:scale-125 hover:border-white/60"
                         }`}
                       >
                         {/* Tooltip on hover */}
-                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tile:block z-50 pointer-events-none">
-                          <div className="bg-gray-900 border border-gray-700 text-gray-200 text-[10px] rounded-lg px-2.5 py-1 whitespace-nowrap shadow-2xl font-mono">
+                        <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 hidden -translate-x-1/2 group-hover/tile:block">
+                          <div className="rounded-lg border border-gray-700 bg-gray-900 px-2.5 py-1 font-mono text-[10px] whitespace-nowrap text-gray-200 shadow-2xl">
                             <p className="font-semibold text-emerald-400">
                               {format(day.date, "MMM d, yyyy")}
                             </p>
                             <p className="text-gray-300">
-                              {day.count} {day.count === 1 ? "word/unit" : "words/units"} • {day.entryCount} {day.entryCount === 1 ? "entry" : "entries"}
+                              {day.count} {day.count === 1 ? "word/unit" : "words/units"} •{" "}
+                              {day.entryCount} {day.entryCount === 1 ? "entry" : "entries"}
                             </p>
                           </div>
                         </div>
@@ -250,14 +249,14 @@ export function HeatmapGrid({
       </div>
 
       {/* Heatmap Legend */}
-      <div className="flex items-center justify-between text-[11px] text-gray-400 font-mono mt-3 pt-2 border-t border-gray-800/40">
+      <div className="mt-3 flex items-center justify-between border-t border-gray-800/40 pt-2 font-mono text-[11px] text-gray-400">
         <span className="text-[10px]">Click any cell to filter notes or log activity</span>
         <div className="flex items-center space-x-1.5">
-          <span className="text-[10px] mr-1">Less</span>
+          <span className="mr-1 text-[10px]">Less</span>
           {colors.map((c, i) => (
-            <div key={i} className={`w-3 h-3 rounded-[2.5px] border ${c}`} />
+            <div key={i} className={`h-3 w-3 rounded-[2.5px] border ${c}`} />
           ))}
-          <span className="text-[10px] ml-1">More</span>
+          <span className="ml-1 text-[10px]">More</span>
         </div>
       </div>
     </div>

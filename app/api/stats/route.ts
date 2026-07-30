@@ -33,7 +33,10 @@ export async function GET() {
     });
 
     const activeDatesSet = new Set(activities.map((a: { date: string }) => a.date));
-    const totalWords = activities.reduce((acc: number, curr: { count: number }) => acc + curr.count, 0);
+    const totalWords = activities.reduce(
+      (acc: number, curr: { count: number }) => acc + curr.count,
+      0
+    );
 
     const todayStr = format(new Date(), "yyyy-MM-dd");
     const yesterdayStr = format(subDays(new Date(), 1), "yyyy-MM-dd");
@@ -42,8 +45,8 @@ export async function GET() {
     let checkDate: Date | null = activeDatesSet.has(todayStr)
       ? new Date()
       : activeDatesSet.has(yesterdayStr)
-      ? subDays(new Date(), 1)
-      : null;
+        ? subDays(new Date(), 1)
+        : null;
 
     if (checkDate) {
       while (true) {
@@ -67,7 +70,9 @@ export async function GET() {
       } else {
         const prevDate = parseISO(sortedDates[i - 1]);
         const currDate = parseISO(sortedDates[i]);
-        const diffInDays = Math.round((currDate.getTime() - prevDate.getTime()) / (1000 * 3600 * 24));
+        const diffInDays = Math.round(
+          (currDate.getTime() - prevDate.getTime()) / (1000 * 3600 * 24)
+        );
 
         if (diffInDays === 1) {
           tempStreak++;

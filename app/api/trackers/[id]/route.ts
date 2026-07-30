@@ -4,10 +4,7 @@ import { prisma } from "@/lib/prisma";
 
 const DEMO_USER_ID = "demo-user-id";
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const session = await auth();

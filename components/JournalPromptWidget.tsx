@@ -28,16 +28,16 @@ export function JournalPromptWidget({ onInsertPrompt }: JournalPromptWidgetProps
   };
 
   return (
-    <div className="bg-gradient-to-r from-violet-950/40 via-purple-950/20 to-[#0f1524] border border-violet-800/40 rounded-2xl p-3.5 mb-4 flex flex-wrap items-center justify-between gap-3 shadow-lg">
+    <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-violet-800/40 bg-gradient-to-r from-violet-950/40 via-purple-950/20 to-[#0f1524] p-3.5 shadow-lg">
       <div className="flex items-center space-x-3">
-        <div className="p-2 rounded-xl bg-violet-500/10 text-violet-400">
-          <Sparkles className="w-4 h-4" />
+        <div className="rounded-xl bg-violet-500/10 p-2 text-violet-400">
+          <Sparkles className="h-4 w-4" />
         </div>
         <div>
-          <span className="text-[10px] font-mono uppercase tracking-wider text-violet-400 font-bold block">
+          <span className="block font-mono text-[10px] font-bold tracking-wider text-violet-400 uppercase">
             Daily Journal Inspiration
           </span>
-          <p className="text-xs font-handwritten text-lg text-violet-100 italic">
+          <p className="font-handwritten text-lg text-xs text-violet-100 italic">
             "{currentPrompt}"
           </p>
         </div>
@@ -47,19 +47,19 @@ export function JournalPromptWidget({ onInsertPrompt }: JournalPromptWidgetProps
         <button
           type="button"
           onClick={handleNextPrompt}
-          className="p-1.5 text-violet-300 hover:text-white hover:bg-violet-900/50 rounded-xl transition text-xs font-mono flex items-center gap-1"
+          className="flex items-center gap-1 rounded-xl p-1.5 font-mono text-xs text-violet-300 transition hover:bg-violet-900/50 hover:text-white"
           title="Shuffle Prompt"
         >
-          <RefreshCw className="w-3.5 h-3.5" />
+          <RefreshCw className="h-3.5 w-3.5" />
           <span className="hidden sm:inline">Shuffle</span>
         </button>
 
         <button
           type="button"
           onClick={() => onInsertPrompt(currentPrompt)}
-          className="flex items-center space-x-1.5 bg-violet-600 hover:bg-violet-500 text-white font-mono text-xs px-3 py-1.5 rounded-xl transition shadow"
+          className="flex items-center space-x-1.5 rounded-xl bg-violet-600 px-3 py-1.5 font-mono text-xs text-white shadow transition hover:bg-violet-500"
         >
-          <PlusCircle className="w-3.5 h-3.5" />
+          <PlusCircle className="h-3.5 w-3.5" />
           <span>Use Prompt</span>
         </button>
       </div>

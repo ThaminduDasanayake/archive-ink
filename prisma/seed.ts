@@ -69,22 +69,26 @@ async function main() {
   const sampleNotes = [
     {
       title: "Building Archive Ink Blueprint",
-      content: "Today we designed the complete architecture for Archive Ink. Using Next.js 16, Prisma ORM, and handwritten typography. #dev #reflection",
+      content:
+        "Today we designed the complete architecture for Archive Ink. Using Next.js 16, Prisma ORM, and handwritten typography. #dev #reflection",
       tags: ["dev", "reflection"],
     },
     {
       title: "Morning Thoughts & Intentions",
-      content: "Sunlight hitting the desk. Setting 3 main intentions for the day: 1. Deep focus work, 2. Afternoon walk, 3. Read 30 pages. #morning-pages",
+      content:
+        "Sunlight hitting the desk. Setting 3 main intentions for the day: 1. Deep focus work, 2. Afternoon walk, 3. Read 30 pages. #morning-pages",
       tags: ["morning-pages"],
     },
     {
       title: "React 19 & Next.js 16 App Router Notes",
-      content: "Explored Server Actions and live preview rendering for lightweight markup editors. Highly performant. #dev",
+      content:
+        "Explored Server Actions and live preview rendering for lightweight markup editors. Highly performant. #dev",
       tags: ["dev"],
     },
     {
       title: "Evening Reflection",
-      content: "A peaceful end to the day. Grateful for clarity of thought and steady habit building. #reflection",
+      content:
+        "A peaceful end to the day. Grateful for clarity of thought and steady habit building. #reflection",
       tags: ["reflection"],
     },
   ];

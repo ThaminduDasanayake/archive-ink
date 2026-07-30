@@ -87,7 +87,12 @@ export async function POST(request: Request) {
     await ensureDefaultTracker(user.id);
 
     const body = await request.json();
-    const { title = "Untitled Entry", content = "", date = getTodayDateString(), tags: inputTags = [] } = body;
+    const {
+      title = "Untitled Entry",
+      content = "",
+      date = getTodayDateString(),
+      tags: inputTags = [],
+    } = body;
 
     const wordCount = calculateWordCount(content);
     const extracted = extractTags(content + " " + (inputTags.join(" ") || ""));
@@ -110,7 +115,8 @@ export async function POST(request: Request) {
       });
 
       for (const tracker of userTrackers) {
-        const isMatched = tracker.isDefault || (tracker.tag && finalTags.includes(tracker.tag.toLowerCase()));
+        const isMatched =
+          tracker.isDefault || (tracker.tag && finalTags.includes(tracker.tag.toLowerCase()));
 
         if (isMatched) {
           await tx.dailyActivity.upsert({

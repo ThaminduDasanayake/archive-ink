@@ -22,11 +22,7 @@ const COLOR_OPTIONS = [
   { id: "rose", label: "Rose Crimson", bg: "bg-rose-500" },
 ];
 
-export function CreateTrackerModal({
-  isOpen,
-  onClose,
-  onCreateTracker,
-}: CreateTrackerModalProps) {
+export function CreateTrackerModal({ isOpen, onClose, onCreateTracker }: CreateTrackerModalProps) {
   const [title, setTitle] = useState("");
   const [tag, setTag] = useState("");
   const [colorScheme, setColorScheme] = useState("violet");
@@ -59,24 +55,22 @@ export function CreateTrackerModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-[#0f1524] border border-gray-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+    <div className="animate-in fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm duration-200">
+      <div className="relative w-full max-w-md rounded-2xl border border-gray-800 bg-[#0f1524] p-6 shadow-2xl">
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 text-gray-400 hover:text-gray-200 p-1 rounded-lg hover:bg-gray-800 transition"
+          className="absolute top-4 right-4 rounded-lg p-1 text-gray-400 transition hover:bg-gray-800 hover:text-gray-200"
         >
-          <X className="w-4 h-4" />
+          <X className="h-4 w-4" />
         </button>
 
-        <div className="flex items-center space-x-2 mb-4">
-          <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
-            <Sparkles className="w-5 h-5" />
+        <div className="mb-4 flex items-center space-x-2">
+          <div className="rounded-xl bg-emerald-500/10 p-2 text-emerald-400">
+            <Sparkles className="h-5 w-5" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-white font-mono">
-              Add Activity Heatmap
-            </h3>
-            <p className="text-xs text-gray-400 font-mono">
+            <h3 className="font-mono text-base font-bold text-white">Add Activity Heatmap</h3>
+            <p className="font-mono text-xs text-gray-400">
               Track custom habits, specific note tags, or writing routines.
             </p>
           </div>
@@ -85,23 +79,21 @@ export function CreateTrackerModal({
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Title */}
           <div>
-            <label className="block text-xs font-mono text-gray-300 mb-1">
-              Tracker Title *
-            </label>
+            <label className="mb-1 block font-mono text-xs text-gray-300">Tracker Title *</label>
             <input
               type="text"
               required
               placeholder="e.g. Morning Pages, Code Journal, Gym Log"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-gray-900 border border-gray-800 rounded-xl px-3.5 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500"
+              className="w-full rounded-xl border border-gray-800 bg-gray-900 px-3.5 py-2 text-xs text-white placeholder-gray-500 focus:border-emerald-500 focus:outline-none"
             />
           </div>
 
           {/* Optional Tag Filter */}
           <div>
-            <label className="block text-xs font-mono text-gray-300 mb-1 flex items-center gap-1">
-              <Tag className="w-3.5 h-3.5 text-emerald-400" />
+            <label className="mb-1 block flex items-center gap-1 font-mono text-xs text-gray-300">
+              <Tag className="h-3.5 w-3.5 text-emerald-400" />
               Auto-Link Hashtag (Optional)
             </label>
             <input
@@ -109,17 +101,17 @@ export function CreateTrackerModal({
               placeholder="e.g. morning-pages (auto-tracks notes with #morning-pages)"
               value={tag}
               onChange={(e) => setTag(e.target.value)}
-              className="w-full bg-gray-900 border border-gray-800 rounded-xl px-3.5 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500"
+              className="w-full rounded-xl border border-gray-800 bg-gray-900 px-3.5 py-2 text-xs text-white placeholder-gray-500 focus:border-emerald-500 focus:outline-none"
             />
-            <p className="text-[10px] text-gray-400 mt-1">
+            <p className="mt-1 text-[10px] text-gray-400">
               Leave blank if you want a manual click tile habit tracker.
             </p>
           </div>
 
           {/* Color Scheme Picker */}
           <div>
-            <label className="block text-xs font-mono text-gray-300 mb-2 flex items-center gap-1">
-              <Palette className="w-3.5 h-3.5 text-violet-400" />
+            <label className="mb-2 block flex items-center gap-1 font-mono text-xs text-gray-300">
+              <Palette className="h-3.5 w-3.5 text-violet-400" />
               Heatmap Color Theme
             </label>
             <div className="flex items-center gap-2">
@@ -129,9 +121,9 @@ export function CreateTrackerModal({
                   key={c.id}
                   onClick={() => setColorScheme(c.id)}
                   title={c.label}
-                  className={`w-9 h-9 rounded-xl border flex items-center justify-center transition-all ${c.bg} ${
+                  className={`flex h-9 w-9 items-center justify-center rounded-xl border transition-all ${c.bg} ${
                     colorScheme === c.id
-                      ? "ring-2 ring-white border-white scale-110"
+                      ? "scale-110 border-white ring-2 ring-white"
                       : "border-transparent opacity-70 hover:opacity-100"
                   }`}
                 />
@@ -140,18 +132,18 @@ export function CreateTrackerModal({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-end space-x-2 pt-3 border-t border-gray-800/80">
+          <div className="flex items-center justify-end space-x-2 border-t border-gray-800/80 pt-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-xs font-mono text-gray-400 hover:bg-gray-800 transition"
+              className="rounded-xl px-4 py-2 font-mono text-xs text-gray-400 transition hover:bg-gray-800"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading || !title.trim()}
-              className="px-4 py-2 rounded-xl text-xs font-mono font-semibold bg-emerald-600 hover:bg-emerald-500 text-black transition shadow-lg disabled:opacity-50"
+              className="rounded-xl bg-emerald-600 px-4 py-2 font-mono text-xs font-semibold text-black shadow-lg transition hover:bg-emerald-500 disabled:opacity-50"
             >
               {loading ? "Creating..." : "Create Heatmap"}
             </button>

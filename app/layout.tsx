@@ -4,7 +4,8 @@ import { Providers } from "@/components/Providers";
 
 export const metadata: Metadata = {
   title: "Archive Ink - Personal Journaling & Habit Activity Tracker",
-  description: "Capture daily thoughts and track writing habits with interactive multi-color annual heatmaps.",
+  description:
+    "Capture daily thoughts and track writing habits with interactive multi-color annual heatmaps.",
 };
 
 export default function RootLayout({
@@ -14,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className="antialiased bg-[#0b0f19] text-gray-100 min-h-screen selection:bg-emerald-500 selection:text-black">
+      <body className="min-h-screen bg-[#0b0f19] text-gray-100 antialiased selection:bg-emerald-500 selection:text-black">
         <Providers>{children}</Providers>
       </body>
     </html>

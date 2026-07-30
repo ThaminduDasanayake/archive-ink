@@ -31,7 +31,12 @@ export interface NoteData {
 
 interface PaperEditorProps {
   note: NoteData | null;
-  onSaveNote: (data: { id?: string; title: string; content: string; date: string }) => Promise<void>;
+  onSaveNote: (data: {
+    id?: string;
+    title: string;
+    content: string;
+    date: string;
+  }) => Promise<void>;
   onDeleteNote?: (id: string) => Promise<void>;
   onClose: () => void;
 }
@@ -110,28 +115,28 @@ export function PaperEditor({ note, onSaveNote, onDeleteNote, onClose }: PaperEd
     fontStyle === "caveat"
       ? "font-handwritten text-2xl tracking-wide leading-relaxed"
       : fontStyle === "architects"
-      ? "font-architects text-xl leading-relaxed"
-      : "font-sans text-base leading-relaxed";
+        ? "font-architects text-xl leading-relaxed"
+        : "font-sans text-base leading-relaxed";
 
   return (
-    <div className="bg-[#0f1524] border border-gray-800/80 rounded-2xl shadow-2xl flex flex-col h-[calc(100vh-6rem)] overflow-hidden">
+    <div className="flex h-[calc(100vh-6rem)] flex-col overflow-hidden rounded-2xl border border-gray-800/80 bg-[#0f1524] shadow-2xl">
       {/* Top Toolbar */}
-      <div className="px-4 py-3 border-b border-gray-800/80 bg-[#0d121f] flex flex-wrap items-center justify-between gap-2 shrink-0">
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-gray-800/80 bg-[#0d121f] px-4 py-3">
         <div className="flex items-center space-x-3">
           <button
             onClick={onClose}
-            className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded-xl transition"
+            className="rounded-xl p-1.5 text-gray-400 transition hover:bg-gray-800 hover:text-white"
             title="Back to Dashboard"
           >
-            <X className="w-5 h-5" />
+            <X className="h-5 w-5" />
           </button>
           <div className="flex items-center space-x-2">
-            <Calendar className="w-4 h-4 text-emerald-400" />
+            <Calendar className="h-4 w-4 text-emerald-400" />
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="bg-gray-900 border border-gray-800 text-xs font-mono text-gray-200 rounded-lg px-2.5 py-1 focus:outline-none focus:border-emerald-500"
+              className="rounded-lg border border-gray-800 bg-gray-900 px-2.5 py-1 font-mono text-xs text-gray-200 focus:border-emerald-500 focus:outline-none"
             />
           </div>
         </div>
@@ -139,27 +144,33 @@ export function PaperEditor({ note, onSaveNote, onDeleteNote, onClose }: PaperEd
         {/* Font Switcher & Formatting Controls */}
         <div className="flex items-center space-x-2">
           {/* Font Selector */}
-          <div className="flex items-center bg-gray-900 border border-gray-800 rounded-xl p-0.5 text-xs font-mono">
+          <div className="flex items-center rounded-xl border border-gray-800 bg-gray-900 p-0.5 font-mono text-xs">
             <button
               onClick={() => setFontStyle("caveat")}
-              className={`px-2.5 py-1 rounded-lg transition ${
-                fontStyle === "caveat" ? "bg-emerald-500/20 text-emerald-400 font-bold" : "text-gray-400"
+              className={`rounded-lg px-2.5 py-1 transition ${
+                fontStyle === "caveat"
+                  ? "bg-emerald-500/20 font-bold text-emerald-400"
+                  : "text-gray-400"
               }`}
             >
               Script
             </button>
             <button
               onClick={() => setFontStyle("architects")}
-              className={`px-2.5 py-1 rounded-lg transition ${
-                fontStyle === "architects" ? "bg-emerald-500/20 text-emerald-400 font-bold" : "text-gray-400"
+              className={`rounded-lg px-2.5 py-1 transition ${
+                fontStyle === "architects"
+                  ? "bg-emerald-500/20 font-bold text-emerald-400"
+                  : "text-gray-400"
               }`}
             >
               Analog
             </button>
             <button
               onClick={() => setFontStyle("sans")}
-              className={`px-2.5 py-1 rounded-lg transition ${
-                fontStyle === "sans" ? "bg-emerald-500/20 text-emerald-400 font-bold" : "text-gray-400"
+              className={`rounded-lg px-2.5 py-1 transition ${
+                fontStyle === "sans"
+                  ? "bg-emerald-500/20 font-bold text-emerald-400"
+                  : "text-gray-400"
               }`}
             >
               Clean
@@ -167,74 +178,74 @@ export function PaperEditor({ note, onSaveNote, onDeleteNote, onClose }: PaperEd
           </div>
 
           {/* Formatting buttons */}
-          <div className="hidden sm:flex items-center space-x-1 bg-gray-900 border border-gray-800 rounded-xl p-1 text-gray-400">
+          <div className="hidden items-center space-x-1 rounded-xl border border-gray-800 bg-gray-900 p-1 text-gray-400 sm:flex">
             <button
               onClick={() => insertFormatting("\n# ")}
-              className="p-1 hover:text-white hover:bg-gray-800 rounded"
+              className="rounded p-1 hover:bg-gray-800 hover:text-white"
               title="Heading 1"
             >
-              <Heading1 className="w-3.5 h-3.5" />
+              <Heading1 className="h-3.5 w-3.5" />
             </button>
             <button
               onClick={() => insertFormatting("\n## ")}
-              className="p-1 hover:text-white hover:bg-gray-800 rounded"
+              className="rounded p-1 hover:bg-gray-800 hover:text-white"
               title="Heading 2"
             >
-              <Heading2 className="w-3.5 h-3.5" />
+              <Heading2 className="h-3.5 w-3.5" />
             </button>
             <button
               onClick={() => insertFormatting("**bold text**")}
-              className="p-1 hover:text-white hover:bg-gray-800 rounded"
+              className="rounded p-1 hover:bg-gray-800 hover:text-white"
               title="Bold"
             >
-              <Bold className="w-3.5 h-3.5" />
+              <Bold className="h-3.5 w-3.5" />
             </button>
             <button
               onClick={() => insertFormatting("*italic text*")}
-              className="p-1 hover:text-white hover:bg-gray-800 rounded"
+              className="rounded p-1 hover:bg-gray-800 hover:text-white"
               title="Italic"
             >
-              <Italic className="w-3.5 h-3.5" />
+              <Italic className="h-3.5 w-3.5" />
             </button>
             <button
               onClick={() => insertFormatting("\n- ")}
-              className="p-1 hover:text-white hover:bg-gray-800 rounded"
+              className="rounded p-1 hover:bg-gray-800 hover:text-white"
               title="Bullet List"
             >
-              <List className="w-3.5 h-3.5" />
+              <List className="h-3.5 w-3.5" />
             </button>
             <button
               onClick={() => insertFormatting("\n> ")}
-              className="p-1 hover:text-white hover:bg-gray-800 rounded"
+              className="rounded p-1 hover:bg-gray-800 hover:text-white"
               title="Quote"
             >
-              <Quote className="w-3.5 h-3.5" />
+              <Quote className="h-3.5 w-3.5" />
             </button>
           </div>
 
           {/* Download Markdown */}
           <button
             onClick={handleDownloadMarkdown}
-            className="p-1.5 text-gray-400 hover:text-emerald-400 hover:bg-gray-800 rounded-xl transition"
+            className="rounded-xl p-1.5 text-gray-400 transition hover:bg-gray-800 hover:text-emerald-400"
             title="Download Entry as .md File"
           >
-            <Download className="w-4 h-4" />
+            <Download className="h-4 w-4" />
           </button>
 
           {/* Save Action */}
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-500 text-black font-semibold text-xs px-3.5 py-1.5 rounded-xl transition shadow-lg disabled:opacity-50"
+            className="flex items-center space-x-1.5 rounded-xl bg-emerald-600 px-3.5 py-1.5 text-xs font-semibold text-black shadow-lg transition hover:bg-emerald-500 disabled:opacity-50"
           >
             {saveSuccess ? (
               <>
-                <CheckCircle className="w-4 h-4" />
+                <CheckCircle className="h-4 w-4" />
                 <span>Saved!</span>
               </>
             ) : (
               <>
-                <Save className="w-4 h-4" />
+                <Save className="h-4 w-4" />
                 <span>{isSaving ? "Saving..." : "Save Entry"}</span>
               </>
             )}
@@ -249,17 +260,17 @@ export function PaperEditor({ note, onSaveNote, onDeleteNote, onClose }: PaperEd
                   onClose();
                 }
               }}
-              className="p-1.5 text-gray-500 hover:text-rose-400 hover:bg-gray-800 rounded-xl transition"
+              className="rounded-xl p-1.5 text-gray-500 transition hover:bg-gray-800 hover:text-rose-400"
               title="Delete Note"
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="h-4 w-4" />
             </button>
           )}
         </div>
       </div>
 
       {/* Editor Body with Prompt Widget */}
-      <div className="flex-1 paper-lined-dark p-4 sm:p-8 overflow-y-auto relative text-gray-200">
+      <div className="paper-lined-dark relative flex-1 overflow-y-auto p-4 text-gray-200 sm:p-8">
         {/* Daily Inspiration Prompt Widget */}
         <JournalPromptWidget onInsertPrompt={handleInsertPrompt} />
 
@@ -269,7 +280,7 @@ export function PaperEditor({ note, onSaveNote, onDeleteNote, onClose }: PaperEd
           placeholder="Title of your journal entry..."
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full bg-transparent border-b border-gray-800/80 pb-3 mb-6 text-2xl font-bold font-mono text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500 transition"
+          className="mb-6 w-full border-b border-gray-800/80 bg-transparent pb-3 font-mono text-2xl font-bold text-white placeholder-gray-600 transition focus:border-emerald-500 focus:outline-none"
         />
 
         {/* Note Content Textarea */}
@@ -277,22 +288,25 @@ export function PaperEditor({ note, onSaveNote, onDeleteNote, onClose }: PaperEd
           placeholder="Write your daily thoughts, reflections, code snippets, or notes... (Use #hashtags to tag your entries)"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className={`w-full min-h-[380px] bg-transparent resize-none focus:outline-none text-emerald-100 placeholder-gray-600 ${fontClass}`}
+          className={`min-h-[380px] w-full resize-none bg-transparent text-emerald-100 placeholder-gray-600 focus:outline-none ${fontClass}`}
         />
       </div>
 
       {/* Editor Footer */}
-      <div className="px-6 py-2.5 border-t border-gray-800/80 bg-[#0d121f] flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-gray-400 shrink-0">
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-t border-gray-800/80 bg-[#0d121f] px-6 py-2.5 font-mono text-xs text-gray-400">
         <div className="flex items-center space-x-4">
           <div>
-            Word Count: <span className="text-emerald-400 font-bold">{wordCount}</span> words
+            Word Count: <span className="font-bold text-emerald-400">{wordCount}</span> words
           </div>
           {tags.length > 0 && (
             <div className="flex items-center space-x-1">
-              <TagIcon className="w-3.5 h-3.5 text-emerald-400" />
+              <TagIcon className="h-3.5 w-3.5 text-emerald-400" />
               <div className="flex gap-1">
                 {tags.map((t) => (
-                  <span key={t} className="text-[10px] bg-emerald-950/60 text-emerald-400 border border-emerald-800/40 px-1.5 py-0.5 rounded">
+                  <span
+                    key={t}
+                    className="rounded border border-emerald-800/40 bg-emerald-950/60 px-1.5 py-0.5 text-[10px] text-emerald-400"
+                  >
                     #{t}
                   </span>
                 ))}
