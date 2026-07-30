@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="88fd4603-fff4-4023-86ed-02de8c2d53a7" name="Changes" comment="" />
+    <list default="true" id="88fd4603-fff4-4023-86ed-02de8c2d53a7" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.github/workflows/lint.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/lint.yml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -76,7 +78,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1785432276631</updated>
-      <workItem from="1785432277726" duration="3077000" />
+      <workItem from="1785432277726" duration="3442000" />
     </task>
     <servers />
   </component>
