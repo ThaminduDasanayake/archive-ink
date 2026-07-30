@@ -2,15 +2,13 @@
 
 import React from "react";
 import {
-  LayoutDashboard,
   BookOpen,
+  Calendar,
+  Flame,
+  Layers,
+  LayoutDashboard,
   PlusCircle,
   Tag,
-  Calendar,
-  Layers,
-  Sparkles,
-  Flame,
-  CheckCircle,
   Trash2,
 } from "lucide-react";
 

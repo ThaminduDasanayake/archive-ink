@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { HeatmapGrid, ActivityData } from "./HeatmapGrid";
+import { ActivityData, HeatmapGrid } from "./HeatmapGrid";
 import { TrackerItem } from "./Sidebar";
-import { Plus, Sparkles, Layers } from "lucide-react";
+import { Layers, Plus } from "lucide-react";
 
 interface MultiTrackerBoardProps {
   trackers: TrackerItem[];

@@ -19,6 +19,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
     return NextResponse.json(note);
   } catch (error) {
+    console.error("GET /api/notes/[id] error:", error);
     return NextResponse.json({ error: "Failed to fetch note" }, { status: 500 });
   }
 }

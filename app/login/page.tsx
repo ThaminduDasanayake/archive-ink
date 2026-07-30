@@ -2,7 +2,7 @@
 
 import React from "react";
 import { signIn } from "next-auth/react";
-import { PenTool, Github, Sparkles, Flame, Shield, ArrowRight } from "lucide-react";
+import { PenTool, Github, Sparkles, Flame, Shield } from "lucide-react";
 
 export default function LoginPage() {
   return (

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Flame, Trophy, FileText, CalendarCheck, Zap } from "lucide-react";
+import { CalendarCheck, FileText, Flame, Trophy } from "lucide-react";
 
 interface StatsProps {
   currentStreak: number;

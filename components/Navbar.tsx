@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { PenTool, Plus, Search, LogIn, LogOut, User as UserIcon, Sparkles } from "lucide-react";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { LogIn, LogOut, PenTool, Plus, Search, User as UserIcon } from "lucide-react";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 interface NavbarProps {
   searchQuery: string;
@@ -17,7 +17,7 @@ export function Navbar({ searchQuery, setSearchQuery, onNewNote }: NavbarProps) 
     <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-gray-800/80 bg-[#0d121f]/90 px-4 shadow-lg backdrop-blur-md md:px-6">
       {/* Brand & Logo */}
       <div className="flex items-center space-x-3">
-        <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-cyan-400 p-0.5 shadow-lg shadow-emerald-950/40">
+        <div className="h-10 w-10 rounded-xl bg-linear-to-tr from-emerald-600 via-teal-500 to-cyan-400 p-0.5 shadow-lg shadow-emerald-950/40">
           <div className="flex h-full w-full items-center justify-center rounded-[10px] bg-[#0b0f19]">
             <PenTool className="h-5 w-5 text-emerald-400" />
           </div>
@@ -69,6 +69,7 @@ export function Navbar({ searchQuery, setSearchQuery, onNewNote }: NavbarProps) 
         {session?.user ? (
           <div className="flex items-center space-x-2 border-l border-gray-800 pl-2">
             {session.user.image ? (
+              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={session.user.image}
                 alt={session.user.name || "User"}

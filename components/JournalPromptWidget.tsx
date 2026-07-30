@@ -28,7 +28,7 @@ export function JournalPromptWidget({ onInsertPrompt }: JournalPromptWidgetProps
   };
 
   return (
-    <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-violet-800/40 bg-gradient-to-r from-violet-950/40 via-purple-950/20 to-[#0f1524] p-3.5 shadow-lg">
+    <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-violet-800/40 bg-linear-to-r from-violet-950/40 via-purple-950/20 to-[#0f1524] p-3.5 shadow-lg">
       <div className="flex items-center space-x-3">
         <div className="rounded-xl bg-violet-500/10 p-2 text-violet-400">
           <Sparkles className="h-4 w-4" />
@@ -37,8 +37,8 @@ export function JournalPromptWidget({ onInsertPrompt }: JournalPromptWidgetProps
           <span className="block font-mono text-[10px] font-bold tracking-wider text-violet-400 uppercase">
             Daily Journal Inspiration
           </span>
-          <p className="font-handwritten text-lg text-xs text-violet-100 italic">
-            "{currentPrompt}"
+          <p className="font-handwritten text-xs text-violet-100 italic">
+            &quot;{currentPrompt}&quot;
           </p>
         </div>
       </div>

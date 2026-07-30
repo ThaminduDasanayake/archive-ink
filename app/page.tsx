@@ -30,25 +30,8 @@ export default function Home() {
     activeDaysCount: 0,
   });
 
-  // Fetch Trackers
-  const fetchTrackers = useCallback(async () => {
-    try {
-      const res = await fetch("/api/trackers");
-      if (res.ok) {
-        const data = await res.json();
-        setTrackers(data);
-        // Fetch activity counts for each tracker
-        for (const t of data) {
-          fetchTrackerActivities(t.id);
-        }
-      }
-    } catch (err) {
-      console.error("Failed to fetch trackers", err);
-    }
-  }, []);
-
   // Fetch Activities for a specific tracker
-  const fetchTrackerActivities = async (trackerId: string) => {
+  const fetchTrackerActivities = useCallback(async (trackerId: string) => {
     try {
       const res = await fetch(`/api/activities?trackerId=${trackerId}`);
       if (res.ok) {
@@ -58,7 +41,24 @@ export default function Home() {
     } catch (err) {
       console.error("Failed to fetch activities", err);
     }
-  };
+  }, []);
+
+  // Fetch Trackers
+  const fetchTrackers = useCallback(async () => {
+    try {
+      const res = await fetch("/api/trackers");
+      if (res.ok) {
+        const data: TrackerItem[] = await res.json();
+        setTrackers(data);
+        // Fetch activity counts for each tracker
+        data.forEach((t) => {
+          fetchTrackerActivities(t.id);
+        });
+      }
+    } catch (err) {
+      console.error("Failed to fetch trackers", err);
+    }
+  }, [fetchTrackerActivities]);
 
   // Fetch Notes
   const fetchNotes = useCallback(async () => {
@@ -95,12 +95,35 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    fetchTrackers();
-    fetchStats();
+    let ignore = false;
+
+    async function loadInitialData() {
+      if (!ignore) {
+        await Promise.all([fetchTrackers(), fetchStats()]);
+      }
+    }
+
+    loadInitialData();
+
+    return () => {
+      ignore = true;
+    };
   }, [fetchTrackers, fetchStats]);
 
   useEffect(() => {
-    fetchNotes();
+    let ignore = false;
+
+    async function loadNotes() {
+      if (!ignore) {
+        await fetchNotes();
+      }
+    }
+
+    loadNotes();
+
+    return () => {
+      ignore = true;
+    };
   }, [fetchNotes]);
 
   // Extract all unique tags
@@ -240,6 +263,7 @@ export default function Home() {
         <main className="mx-auto w-full max-w-7xl flex-1 overflow-y-auto p-4 sm:p-6">
           {activeView === "editor" ? (
             <PaperEditor
+              key={editingNote?.id || "new-note"}
               note={editingNote}
               onSaveNote={handleSaveNote}
               onDeleteNote={handleDeleteNote}

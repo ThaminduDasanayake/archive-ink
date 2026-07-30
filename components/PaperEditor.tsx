@@ -1,20 +1,20 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
-  Save,
-  Trash2,
-  Calendar,
-  Tag as TagIcon,
   Bold,
-  Italic,
-  List,
+  Calendar,
+  CheckCircle,
+  Download,
   Heading1,
   Heading2,
+  Italic,
+  List,
   Quote,
-  CheckCircle,
+  Save,
+  Tag as TagIcon,
+  Trash2,
   X,
-  Download,
 } from "lucide-react";
 import confetti from "canvas-confetti";
 import { calculateWordCount, extractTags, getTodayDateString } from "@/lib/utils";
@@ -49,12 +49,6 @@ export function PaperEditor({ note, onSaveNote, onDeleteNote, onClose }: PaperEd
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  useEffect(() => {
-    setTitle(note?.title || "");
-    setContent(note?.content || "");
-    setDate(note?.date || getTodayDateString());
-  }, [note]);
-
   const wordCount = calculateWordCount(content);
   const tags = extractTags(content + " " + title);
 
@@ -77,7 +71,7 @@ export function PaperEditor({ note, onSaveNote, onDeleteNote, onClose }: PaperEd
           origin: { y: 0.8 },
           colors: ["#10b981", "#8b5cf6", "#f59e0b"],
         });
-      } catch (e) {
+      } catch {
         // Fallback if canvas-confetti environment is quiet
       }
       setTimeout(() => setSaveSuccess(false), 2000);

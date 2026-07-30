@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, Sparkles, Tag, Palette } from "lucide-react";
+import { Palette, Sparkles, Tag, X } from "lucide-react";
 
 interface CreateTrackerModalProps {
   isOpen: boolean;
@@ -26,7 +26,7 @@ export function CreateTrackerModal({ isOpen, onClose, onCreateTracker }: CreateT
   const [title, setTitle] = useState("");
   const [tag, setTag] = useState("");
   const [colorScheme, setColorScheme] = useState("violet");
-  const [metricType, setMetricType] = useState("AUTO_NOTE");
+  const [metricType] = useState("AUTO_NOTE");
   const [loading, setLoading] = useState(false);
 
   if (!isOpen) return null;

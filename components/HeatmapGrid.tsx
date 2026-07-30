@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { format, subDays, startOfWeek, addDays, parseISO, isSameDay } from "date-fns";
-import { Sparkles, Calendar as CalendarIcon, CheckCircle2 } from "lucide-react";
+import { addDays, format, startOfWeek, subDays } from "date-fns";
+import { Sparkles } from "lucide-react";
 
 export interface ActivityData {
   date: string; // YYYY-MM-DD
@@ -171,7 +171,7 @@ export function HeatmapGrid({
 
       {/* Grid Container with Horizontal Scroll fallback */}
       <div className="scrollbar-thin overflow-x-auto pb-2">
-        <div className="min-w-[720px] select-none">
+        <div className="min-w-180 select-none">
           {/* Month Labels */}
           <div className="mb-1.5 flex pl-8 font-mono text-[10px] text-gray-400">
             {monthHeaders.map((m, idx) => (

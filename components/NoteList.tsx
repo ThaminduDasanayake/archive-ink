@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { BookOpen, Calendar, FileText, Tag, Trash2, ArrowRight, Clock } from "lucide-react";
+import { ArrowRight, BookOpen, Calendar, Trash2 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 
 export interface NoteItem {
@@ -90,7 +90,7 @@ export function NoteList({
               </h4>
 
               {/* Snippet */}
-              <p className="font-handwritten mb-3 line-clamp-2 text-lg text-xs leading-relaxed text-gray-400">
+              <p className="font-handwritten mb-3 line-clamp-2 text-xs leading-relaxed text-gray-400">
                 {note.content || "Empty note content..."}
               </p>
             </div>
