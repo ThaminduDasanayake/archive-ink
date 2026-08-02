@@ -199,21 +199,25 @@ export function HeatmapGrid({
 
     const weeksList: { date: Date; dateStr: string; inYear: boolean }[][] = [];
     let currentWeek: { date: Date; dateStr: string; inYear: boolean }[] = [];
-    const monthCols: { month: string; colIndex: number }[] = [];
-    let lastMonth = "";
+
+    // const monthCols: { month: string; colIndex: number }[] = [];
+    // let lastMonth = "";
 
     allDays.forEach((day) => {
       const dateStr = format(day, "yyyy-MM-dd");
       const inYear = isSameYear(day, Jan1);
       currentWeek.push({ date: day, dateStr, inYear });
 
+      // if (inYear) {
+      //   const monthName = format(day, "MMM");
+      //   if (monthName !== lastMonth) {
+      //     const weekIndex = weeksList.length;
+      //     monthCols.push({ month: monthName, colIndex: weekIndex });
+      //     lastMonth = monthName;
+      //   }
+      // }
+
       if (currentWeek.length === 7) {
-        const weekIndex = weeksList.length;
-        const monthName = format(day, "MMM");
-        if (monthName !== lastMonth && inYear) {
-          monthCols.push({ month: monthName, colIndex: weekIndex });
-          lastMonth = monthName;
-        }
         weeksList.push(currentWeek);
         currentWeek = [];
       }
@@ -223,7 +227,32 @@ export function HeatmapGrid({
       weeksList.push(currentWeek);
     }
 
-    return { weeks: weeksList, monthHeaders: monthCols };
+    const cols: { month: string; colSpan: number }[] = [];
+    let currentMonthName = "";
+    let currentSpan = 0;
+
+    weeksList.forEach((week) => {
+      const validDay = week.find((day) => day.inYear);
+      if (!validDay) return;
+
+      const monthName = format(validDay.date, "MMM");
+
+      if (monthName !== currentMonthName) {
+        if (currentSpan > 0) {
+          cols.push({ month: currentMonthName, colSpan: currentSpan });
+        }
+        currentMonthName = monthName;
+        currentSpan = 1;
+      } else {
+        currentSpan += 1;
+      }
+    });
+
+    if (currentSpan > 0) {
+      cols.push({ month: currentMonthName, colSpan: currentSpan });
+    }
+
+    return { weeks: weeksList, monthHeaders: cols };
   }, [year]);
 
   // Compute total value based on tracker's level definitions
@@ -506,113 +535,200 @@ export function HeatmapGrid({
         </div>
 
         {/* Heatmap Grid Layout Card */}
+        {/*<div className="relative rounded-lg border border-[#30363d] bg-[#010409] p-4 sm:p-5">*/}
+        {/*  <div className="custom-scrollbar overflow-x-auto pb-3">*/}
+        {/*    <div className="min-w-180 select-none">*/}
+        {/*      /!* Months Header Line *!/*/}
+        {/*      <div className="relative mb-2 flex h-4 pl-8 text-[11px] text-[#8b949e]">*/}
+        {/*        {monthHeaders.map((m, i) => (*/}
+        {/*          <div*/}
+        {/*            key={i}*/}
+        {/*            style={{*/}
+        {/*              position: "absolute",*/}
+        {/*              left: `${m.colIndex * 13 + 32}px`,*/}
+        {/*            }}*/}
+        {/*            className="font-medium text-[#8b949e]"*/}
+        {/*          >*/}
+        {/*            {m.month}*/}
+        {/*          </div>*/}
+        {/*        ))}*/}
+        {/*      </div>*/}
+
+        {/*      /!* Grid Body: Left Day Sidebar + Weeks Columns *!/*/}
+        {/*      <div className="flex gap-1.5">*/}
+        {/*        <div className="flex flex-col justify-between py-px pr-2 text-[10px] text-[#8b949e]">*/}
+        {/*          <span className="h-3 leading-3" />*/}
+        {/*          <span className="h-3 leading-3 font-medium">Mon</span>*/}
+        {/*          <span className="h-3 leading-3" />*/}
+        {/*          <span className="h-3 leading-3 font-medium">Wed</span>*/}
+        {/*          <span className="h-3 leading-3" />*/}
+        {/*          <span className="h-3 leading-3 font-medium">Fri</span>*/}
+        {/*          <span className="h-3 leading-3" />*/}
+        {/*        </div>*/}
+
+        {/*        <div*/}
+        {/*          className="flex flex-1 gap-0.75"*/}
+        {/*          onMouseDown={() => setIsMouseDown(true)}*/}
+        {/*          onMouseUp={() => setIsMouseDown(false)}*/}
+        {/*        >*/}
+        {/*          {weeks.map((week, weekIdx) => (*/}
+        {/*            <div key={weekIdx} className="flex flex-col gap-0.75">*/}
+        {/*              {week.map((day) => {*/}
+        {/*                const level = (tracker.contributions[day.dateStr] ||*/}
+        {/*                  0) as ContributionLevel;*/}
+        {/*                const levelClass = currentThemeObj.levels[level];*/}
+        {/*                const borderClass = currentThemeObj.borderLevels[level];*/}
+        {/*                const definition = tracker.levelDefs[level] || DEFAULT_LEVEL_DEFS[level];*/}
+
+        {/*                return (*/}
+        {/*                  <button*/}
+        {/*                    key={day.dateStr}*/}
+        {/*                    disabled={!day.inYear}*/}
+        {/*                    onClick={() => day.inYear && handleCellAction(day.dateStr)}*/}
+        {/*                    onContextMenu={(e) => {*/}
+        {/*                      e.preventDefault();*/}
+        {/*                      if (day.inYear) handleCellAction(day.dateStr, true);*/}
+        {/*                    }}*/}
+        {/*                    onMouseEnter={(e) => {*/}
+        {/*                      if (day.inYear) {*/}
+        {/*                        handleMouseEnterCell(day.dateStr);*/}
+        {/*                        const rect = e.currentTarget.getBoundingClientRect();*/}
+        {/*                        setHoveredCell({*/}
+        {/*                          dateStr: day.dateStr,*/}
+        {/*                          formattedDate: format(day.date, "EEEE, MMMM d, yyyy"),*/}
+        {/*                          level,*/}
+        {/*                          definition,*/}
+        {/*                          x: rect.left + rect.width / 2,*/}
+        {/*                          y: rect.top,*/}
+        {/*                        });*/}
+        {/*                      }*/}
+        {/*                    }}*/}
+        {/*                    onMouseLeave={() => setHoveredCell(null)}*/}
+        {/*                    className={`h-2.5 w-2.5 rounded-xs border transition-all duration-100 sm:h-2.75 sm:w-2.75 ${*/}
+        {/*                      !day.inYear*/}
+        {/*                        ? "invisible"*/}
+        {/*                        : `${levelClass} ${borderClass} hover:z-20 hover:scale-125 hover:border-[#8b949e] hover:shadow-lg`*/}
+        {/*                    }`}*/}
+        {/*                  />*/}
+        {/*                );*/}
+        {/*              })}*/}
+        {/*            </div>*/}
+        {/*          ))}*/}
+        {/*        </div>*/}
+        {/*      </div>*/}
+        {/*    </div>*/}
+        {/*  </div>*/}
+
+        {/*  /!* Bottom Footer Row *!/*/}
+        {/*  <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-[#21262d] pt-3 text-[11px] text-[#8b949e]">*/}
+        {/*    <button*/}
+        {/*      onClick={() => setShowInfoModal(true)}*/}
+        {/*      className="flex items-center gap-1.5 font-medium text-[#8b949e] transition-colors hover:text-[#58a6ff]"*/}
+        {/*    >*/}
+        {/*      <InfoIcon className="h-3.5 w-3.5" />*/}
+        {/*      <span>Learn how we count contributions</span>*/}
+        {/*    </button>*/}
+
+        {/*    <div className="flex items-center gap-1.5">*/}
+        {/*      <span className="mr-1 text-[11px] text-[#8b949e]">Less</span>*/}
+        {/*      {currentThemeObj.levels.map((lvlClass, idx) => {*/}
+        {/*        const def = tracker.levelDefs[idx as ContributionLevel];*/}
+        {/*        return (*/}
+        {/*          <div*/}
+        {/*            key={idx}*/}
+        {/*            title={`Level ${idx}: ${def?.label || `Level ${idx}`}`}*/}
+        {/*            className={`h-2.5 w-2.5 cursor-default rounded-xs border ${lvlClass} ${currentThemeObj.borderLevels[idx]}`}*/}
+        {/*          />*/}
+        {/*        );*/}
+        {/*      })}*/}
+        {/*      <span className="ml-1 text-[11px] text-[#8b949e]">More</span>*/}
+        {/*    </div>*/}
+        {/*  </div>*/}
+        {/*</div>*/}
+
         <div className="relative rounded-lg border border-[#30363d] bg-[#010409] p-4 sm:p-5">
           <div className="custom-scrollbar overflow-x-auto pb-3">
-            <div className="min-w-180 select-none">
-              {/* Months Header Line */}
-              <div className="relative mb-2 flex h-4 pl-8 text-[11px] text-[#8b949e]">
+            <div className="inline-block select-none">
+              {/* Grid Layout Container */}
+              <div
+                className="grid gap-x-0.75"
+                style={{
+                  // 1 column for day labels (Mon/Wed/Fri) + 1 column per week
+                  gridTemplateColumns: `auto repeat(${weeks.length}, minmax(10px, 1fr))`,
+                }}
+              >
+                {/* Row 1: Months Header */}
+                <div className="text-[11px] text-[#8b949e]" />{" "}
+                {/* Empty corner cell above Mon/Wed/Fri */}
                 {monthHeaders.map((m, i) => (
                   <div
                     key={i}
-                    style={{
-                      position: "absolute",
-                      left: `${m.colIndex * 13 + 32}px`,
-                    }}
-                    className="font-medium text-[#8b949e]"
+                    style={{ gridColumn: `span ${m.colSpan}` }}
+                    className="pr-1 text-left text-[11px] font-medium text-[#8b949e]"
                   >
                     {m.month}
                   </div>
                 ))}
-              </div>
-
-              {/* Grid Body: Left Day Sidebar + Weeks Columns */}
-              <div className="flex gap-1.5">
+                {/* Row 2: Grid Body (Day Sidebar + Week Columns) */}
+                {/* Left Day Sidebar */}
                 <div className="flex flex-col justify-between py-px pr-2 text-[10px] text-[#8b949e]">
-                  <span className="h-3 leading-3" />
-                  <span className="h-3 leading-3 font-medium">Mon</span>
-                  <span className="h-3 leading-3" />
-                  <span className="h-3 leading-3 font-medium">Wed</span>
-                  <span className="h-3 leading-3" />
-                  <span className="h-3 leading-3 font-medium">Fri</span>
-                  <span className="h-3 leading-3" />
+                  <span className="h-2.5 leading-2.5 sm:h-2.75" />
+                  <span className="h-2.5 leading-2.5 font-medium sm:h-2.75">Mon</span>
+                  <span className="h-2.5 leading-2.5 sm:h-2.75" />
+                  <span className="h-2.5 leading-2.5 font-medium sm:h-2.75">Wed</span>
+                  <span className="h-2.5 leading-2.5 sm:h-2.75" />
+                  <span className="h-2.5 leading-2.5 font-medium sm:h-2.75">Fri</span>
+                  <span className="h-2.5 leading-2.5 sm:h-2.75" />
                 </div>
-
-                <div
-                  className="flex flex-1 gap-0.75"
-                  onMouseDown={() => setIsMouseDown(true)}
-                  onMouseUp={() => setIsMouseDown(false)}
-                >
-                  {weeks.map((week, weekIdx) => (
-                    <div key={weekIdx} className="flex flex-col gap-0.75">
-                      {week.map((day) => {
-                        const level = (tracker.contributions[day.dateStr] ||
-                          0) as ContributionLevel;
-                        const levelClass = currentThemeObj.levels[level];
-                        const borderClass = currentThemeObj.borderLevels[level];
-                        const definition = tracker.levelDefs[level] || DEFAULT_LEVEL_DEFS[level];
-
-                        return (
-                          <button
-                            key={day.dateStr}
-                            disabled={!day.inYear}
-                            onClick={() => day.inYear && handleCellAction(day.dateStr)}
-                            onContextMenu={(e) => {
-                              e.preventDefault();
-                              if (day.inYear) handleCellAction(day.dateStr, true);
-                            }}
-                            onMouseEnter={(e) => {
-                              if (day.inYear) {
-                                handleMouseEnterCell(day.dateStr);
-                                const rect = e.currentTarget.getBoundingClientRect();
-                                setHoveredCell({
-                                  dateStr: day.dateStr,
-                                  formattedDate: format(day.date, "EEEE, MMMM d, yyyy"),
-                                  level,
-                                  definition,
-                                  x: rect.left + rect.width / 2,
-                                  y: rect.top,
-                                });
-                              }
-                            }}
-                            onMouseLeave={() => setHoveredCell(null)}
-                            className={`h-2.5 w-2.5 rounded-xs border transition-all duration-100 sm:h-2.75 sm:w-2.75 ${
-                              !day.inYear
-                                ? "invisible"
-                                : `${levelClass} ${borderClass} hover:z-20 hover:scale-125 hover:border-[#8b949e] hover:shadow-lg`
-                            }`}
-                          />
-                        );
-                      })}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom Footer Row */}
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-[#21262d] pt-3 text-[11px] text-[#8b949e]">
-            <button
-              onClick={() => setShowInfoModal(true)}
-              className="flex items-center gap-1.5 font-medium text-[#8b949e] transition-colors hover:text-[#58a6ff]"
-            >
-              <InfoIcon className="h-3.5 w-3.5" />
-              <span>Learn how we count contributions</span>
-            </button>
-
-            <div className="flex items-center gap-1.5">
-              <span className="mr-1 text-[11px] text-[#8b949e]">Less</span>
-              {currentThemeObj.levels.map((lvlClass, idx) => {
-                const def = tracker.levelDefs[idx as ContributionLevel];
-                return (
+                {/* Week Columns */}
+                {weeks.map((week, weekIdx) => (
                   <div
-                    key={idx}
-                    title={`Level ${idx}: ${def?.label || `Level ${idx}`}`}
-                    className={`h-2.5 w-2.5 cursor-default rounded-xs border ${lvlClass} ${currentThemeObj.borderLevels[idx]}`}
-                  />
-                );
-              })}
-              <span className="ml-1 text-[11px] text-[#8b949e]">More</span>
+                    key={weekIdx}
+                    className="flex flex-col gap-0.75"
+                    onMouseDown={() => setIsMouseDown(true)}
+                    onMouseUp={() => setIsMouseDown(false)}
+                  >
+                    {week.map((day) => {
+                      const level = (tracker.contributions[day.dateStr] || 0) as ContributionLevel;
+                      const levelClass = currentThemeObj.levels[level];
+                      const borderClass = currentThemeObj.borderLevels[level];
+                      const definition = tracker.levelDefs[level] || DEFAULT_LEVEL_DEFS[level];
+
+                      return (
+                        <button
+                          key={day.dateStr}
+                          disabled={!day.inYear}
+                          onClick={() => day.inYear && handleCellAction(day.dateStr)}
+                          onContextMenu={(e) => {
+                            e.preventDefault();
+                            if (day.inYear) handleCellAction(day.dateStr, true);
+                          }}
+                          onMouseEnter={(e) => {
+                            if (day.inYear) {
+                              handleMouseEnterCell(day.dateStr);
+                              const rect = e.currentTarget.getBoundingClientRect();
+                              setHoveredCell({
+                                dateStr: day.dateStr,
+                                formattedDate: format(day.date, "EEEE, MMMM d, yyyy"),
+                                level,
+                                definition,
+                                x: rect.left + rect.width / 2,
+                                y: rect.top,
+                              });
+                            }
+                          }}
+                          onMouseLeave={() => setHoveredCell(null)}
+                          className={`h-2.5 w-2.5 rounded-xs border transition-all duration-100 sm:h-2.75 sm:w-2.75 ${
+                            !day.inYear
+                              ? "invisible"
+                              : `${levelClass} ${borderClass} hover:z-20 hover:scale-125 hover:border-[#8b949e] hover:shadow-lg`
+                          }`}
+                        />
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
