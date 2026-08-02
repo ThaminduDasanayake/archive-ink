@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Providers } from "@/components/Providers";
+// import { Providers } from "@/.vercel/Providers";
 import { ReactNode } from "react";
 
 export const metadata: Metadata = {
@@ -17,7 +17,8 @@ export default function RootLayout({
   return (
     <html lang="en" className="light">
       <body className="min-h-screen bg-slate-50 text-slate-900 antialiased selection:bg-emerald-500 selection:text-white">
-        <Providers>{children}</Providers>
+        {/*<Providers>{children}</Providers>*/}
+        {children}
       </body>
     </html>
   );

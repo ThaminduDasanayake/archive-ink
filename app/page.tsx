@@ -1,320 +1,141 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { Navbar } from "@/components/Navbar";
-import { Sidebar, TrackerItem } from "@/components/Sidebar";
-import { MultiTrackerBoard } from "@/components/MultiTrackerBoard";
-import { StatsOverview } from "@/components/StatsOverview";
-import { NoteList, NoteItem } from "@/components/NoteList";
-import { PaperEditor, NoteData } from "@/components/PaperEditor";
-import { CreateTrackerModal } from "@/components/CreateTrackerModal";
-import { ActivityData } from "@/components/HeatmapGrid";
-import { getTodayDateString } from "@/lib/utils";
+import React, { useState } from "react";
+import {
+  HeatmapGrid,
+  Tracker,
+  DEFAULT_LEVEL_DEFS,
+  generateSampleContributions,
+} from "@/components/HeatmapGrid";
+import { Plus, LayoutGrid } from "lucide-react";
+
+// Pre-populate sample trackers for multi-tracker demonstration
+const INITIAL_TRACKERS: Tracker[] = [
+  {
+    id: "tracker-1",
+    title: "GitHub Contributions 2026",
+    unitName: "contributions",
+    colorTheme: "github",
+    levelDefs: {
+      0: { label: "No activity", count: 0 },
+      1: { label: "1-3 commits", count: 1 },
+      2: { label: "4-6 commits", count: 3 },
+      3: { label: "7-9 commits", count: 6 },
+      4: { label: "10+ commits", count: 10 },
+    },
+    contributions: generateSampleContributions(2026),
+  },
+  {
+    id: "tracker-2",
+    title: "Gym & Fitness Workouts",
+    unitName: "sessions",
+    colorTheme: "emerald",
+    levelDefs: {
+      0: { label: "Rest Day", count: 0 },
+      1: { label: "Light Walk / Cardio", count: 1 },
+      2: { label: "30 Min Workout", count: 2 },
+      3: { label: "1 Hour Strength Training", count: 3 },
+      4: { label: "Heavy Workout + Cardio", count: 5 },
+    },
+    contributions: generateSampleContributions(2026),
+  },
+  {
+    id: "tracker-3",
+    title: "Daily Reading Habit",
+    unitName: "pages",
+    colorTheme: "cyberpunk",
+    levelDefs: {
+      0: { label: "No reading", count: 0 },
+      1: { label: "5-10 pages", count: 5 },
+      2: { label: "15-25 pages", count: 15 },
+      3: { label: "30-50 pages", count: 30 },
+      4: { label: "50+ pages / 1 Chapter", count: 50 },
+    },
+    contributions: generateSampleContributions(2026),
+  },
+];
 
 export default function Home() {
-  const [activeView, setActiveView] = useState<"dashboard" | "editor" | "notes">("dashboard");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [editingNote, setEditingNote] = useState<NoteData | null>(null);
-  const [isCreateTrackerOpen, setIsCreateTrackerOpen] = useState(false);
+  const [trackers, setTrackers] = useState<Tracker[]>(INITIAL_TRACKERS);
 
-  // State data
-  const [notes, setNotes] = useState<NoteItem[]>([]);
-  const [trackers, setTrackers] = useState<TrackerItem[]>([]);
-  const [activitiesMap, setActivitiesMap] = useState<Record<string, ActivityData[]>>({});
-  const [stats, setStats] = useState({
-    currentStreak: 0,
-    longestStreak: 0,
-    totalWords: 0,
-    activeDaysCount: 0,
-  });
-
-  // Fetch Activities for a specific tracker
-  const fetchTrackerActivities = useCallback(async (trackerId: string) => {
-    try {
-      const res = await fetch(`/api/activities?trackerId=${trackerId}`);
-      if (res.ok) {
-        const data = await res.json();
-        setActivitiesMap((prev) => ({ ...prev, [trackerId]: data }));
-      }
-    } catch (err) {
-      console.error("Failed to fetch activities", err);
-    }
-  }, []);
-
-  // Fetch Trackers
-  const fetchTrackers = useCallback(async () => {
-    try {
-      const res = await fetch("/api/trackers");
-      if (res.ok) {
-        const data: TrackerItem[] = await res.json();
-        setTrackers(data);
-        // Fetch activity counts for each tracker
-        data.forEach((t) => {
-          fetchTrackerActivities(t.id);
-        });
-      }
-    } catch (err) {
-      console.error("Failed to fetch trackers", err);
-    }
-  }, [fetchTrackerActivities]);
-
-  // Fetch Notes
-  const fetchNotes = useCallback(async () => {
-    try {
-      let url = "/api/notes";
-      const params = new URLSearchParams();
-      if (selectedTag) params.set("tag", selectedTag);
-      if (selectedDate) params.set("date", selectedDate);
-      if (searchQuery) params.set("search", searchQuery);
-
-      if (params.toString()) url += `?${params.toString()}`;
-
-      const res = await fetch(url);
-      if (res.ok) {
-        const data = await res.json();
-        setNotes(data);
-      }
-    } catch (err) {
-      console.error("Failed to fetch notes", err);
-    }
-  }, [selectedTag, selectedDate, searchQuery]);
-
-  // Fetch Stats
-  const fetchStats = useCallback(async () => {
-    try {
-      const res = await fetch("/api/stats");
-      if (res.ok) {
-        const data = await res.json();
-        setStats(data);
-      }
-    } catch (err) {
-      console.error("Failed to fetch stats", err);
-    }
-  }, []);
-
-  useEffect(() => {
-    let ignore = false;
-
-    async function loadInitialData() {
-      if (!ignore) {
-        await Promise.all([fetchTrackers(), fetchStats()]);
-      }
-    }
-
-    loadInitialData();
-
-    return () => {
-      ignore = true;
+  // Add new blank or custom tracker
+  const handleAddTracker = () => {
+    const newId = `tracker-${Date.now()}`;
+    const newTracker: Tracker = {
+      id: newId,
+      title: `Custom Tracker ${trackers.length + 1}`,
+      unitName: "units",
+      colorTheme: "ocean",
+      levelDefs: { ...DEFAULT_LEVEL_DEFS },
+      contributions: {},
     };
-  }, [fetchTrackers, fetchStats]);
-
-  useEffect(() => {
-    let ignore = false;
-
-    async function loadNotes() {
-      if (!ignore) {
-        await fetchNotes();
-      }
-    }
-
-    loadNotes();
-
-    return () => {
-      ignore = true;
-    };
-  }, [fetchNotes]);
-
-  // Extract all unique tags
-  const allTags = useMemo(() => {
-    const set = new Set<string>();
-    notes.forEach((n) => n.tags.forEach((t) => set.add(t)));
-    return Array.from(set);
-  }, [notes]);
-
-  // Actions
-  const handleNewNote = () => {
-    setEditingNote({
-      title: "",
-      content: "",
-      date: selectedDate || getTodayDateString(),
-      tags: [],
-      wordCount: 0,
-    });
-    setActiveView("editor");
+    setTrackers((prev) => [...prev, newTracker]);
   };
 
-  const handleSaveNote = async (data: {
-    id?: string;
-    title: string;
-    content: string;
-    date: string;
-  }) => {
-    try {
-      const isUpdate = !!data.id;
-      const url = isUpdate ? `/api/notes/${data.id}` : "/api/notes";
-      const method = isUpdate ? "PUT" : "POST";
-
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (res.ok) {
-        const saved = await res.json();
-        setEditingNote(saved);
-        fetchNotes();
-        fetchTrackers();
-        fetchStats();
-      }
-    } catch (err) {
-      console.error("Save note failed", err);
-    }
+  // Update a single tracker by ID
+  const handleUpdateTracker = (updated: Tracker) => {
+    setTrackers((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
   };
 
-  const handleDeleteNote = async (id: string) => {
-    try {
-      const res = await fetch(`/api/notes/${id}`, { method: "DELETE" });
-      if (res.ok) {
-        fetchNotes();
-        fetchTrackers();
-        fetchStats();
-        if (editingNote?.id === id) {
-          setEditingNote(null);
-          setActiveView("dashboard");
-        }
-      }
-    } catch (err) {
-      console.error("Delete note failed", err);
-    }
-  };
-
-  const handleCreateTracker = async (data: {
-    title: string;
-    tag?: string;
-    colorScheme: string;
-    metricType: string;
-  }) => {
-    try {
-      const res = await fetch("/api/trackers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (res.ok) {
-        fetchTrackers();
-      }
-    } catch (err) {
-      console.error("Create tracker failed", err);
-    }
-  };
-
-  const handleDeleteTracker = async (id: string) => {
-    if (confirm("Delete this activity heatmap tracker?")) {
-      try {
-        const res = await fetch(`/api/trackers/${id}`, { method: "DELETE" });
-        if (res.ok) {
-          fetchTrackers();
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    }
-  };
-
-  const handleCellClickToggle = async (trackerId: string, date: string) => {
-    try {
-      const res = await fetch("/api/activities", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ trackerId, date }),
-      });
-      if (res.ok) {
-        fetchTrackerActivities(trackerId);
-        fetchStats();
-      }
-    } catch (err) {
-      console.error(err);
-    }
+  // Delete a tracker by ID
+  const handleDeleteTracker = (id: string) => {
+    setTrackers((prev) => prev.filter((t) => t.id !== id));
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50 font-sans">
-      <Navbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} onNewNote={handleNewNote} />
+    <main className="flex min-h-screen flex-col items-center bg-[#0d1117] px-4 py-10 font-sans selection:bg-emerald-500 selection:text-white sm:px-6">
+      <div className="w-full max-w-5xl space-y-8">
+        {/* Main Dashboard Header */}
+        <div className="flex flex-col items-start justify-between gap-4 border-b border-[#30363d] pb-6 sm:flex-row sm:items-center">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#30363d] bg-[#161b22] text-emerald-400 shadow-xl">
+              <LayoutGrid className="h-6 w-6" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight text-[#f0f6fc] sm:text-3xl">
+                Multi-Tracker Activity Hub
+              </h1>
+              <p className="text-xs text-[#8b949e] sm:text-sm">
+                Track anything offline with customizable contribution heatmaps placed one after
+                another.
+              </p>
+            </div>
+          </div>
 
-      <div className="flex flex-1 overflow-hidden">
-        <Sidebar
-          activeView={activeView}
-          setActiveView={setActiveView}
-          trackers={trackers}
-          selectedTag={selectedTag}
-          setSelectedTag={setSelectedTag}
-          selectedDate={selectedDate}
-          setSelectedDate={setSelectedDate}
-          allTags={allTags}
-          onOpenCreateTracker={() => setIsCreateTrackerOpen(true)}
-          onDeleteTracker={handleDeleteTracker}
-          currentStreak={stats.currentStreak}
-        />
+          <button
+            onClick={handleAddTracker}
+            className="flex items-center gap-2 rounded-lg bg-[#238636] px-4 py-2 text-xs font-medium text-white shadow-lg transition-all duration-150 hover:bg-[#2ea043] active:scale-95"
+          >
+            <Plus className="h-4 w-4" />
+            <span>Add New Tracker</span>
+          </button>
+        </div>
 
-        {/* Main Content Area */}
-        <main className="mx-auto w-full max-w-7xl flex-1 overflow-y-auto p-4 sm:p-6">
-          {activeView === "editor" ? (
-            <PaperEditor
-              key={editingNote?.id || "new-note"}
-              note={editingNote}
-              onSaveNote={handleSaveNote}
-              onDeleteNote={handleDeleteNote}
-              onClose={() => setActiveView("dashboard")}
-            />
-          ) : (
-            <>
-              {/* Habit Streak Stats Overview */}
-              <StatsOverview
-                currentStreak={stats.currentStreak}
-                longestStreak={stats.longestStreak}
-                totalWords={stats.totalWords}
-                activeDaysCount={stats.activeDaysCount}
+        {/* List of Trackers Placed One After Another */}
+        {trackers.length === 0 ? (
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#30363d] bg-[#161b22]/40 p-12 text-center">
+            <p className="font-medium text-[#8b949e]">No active trackers.</p>
+            <button
+              onClick={handleAddTracker}
+              className="mt-4 flex items-center gap-2 rounded-md bg-[#238636] px-3.5 py-2 text-xs font-medium text-white hover:bg-[#2ea043]"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Create Your First Tracker</span>
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-8">
+            {trackers.map((tracker) => (
+              <HeatmapGrid
+                key={tracker.id}
+                tracker={tracker}
+                onUpdateTracker={handleUpdateTracker}
+                onDeleteTracker={handleDeleteTracker}
               />
-
-              {/* Annual Multi-Tracker Heatmap Boards */}
-              <MultiTrackerBoard
-                trackers={trackers}
-                activitiesMap={activitiesMap}
-                selectedDate={selectedDate}
-                onSelectDate={(date) => {
-                  setSelectedDate(date);
-                  setActiveView("notes");
-                }}
-                onCellClickToggle={handleCellClickToggle}
-                onOpenCreateTracker={() => setIsCreateTrackerOpen(true)}
-              />
-
-              {/* Recent Notes Section */}
-              <NoteList
-                notes={notes}
-                onSelectNote={(note) => {
-                  setEditingNote(note);
-                  setActiveView("editor");
-                }}
-                onDeleteNote={handleDeleteNote}
-                onNewNote={handleNewNote}
-                selectedTag={selectedTag}
-                selectedDate={selectedDate}
-              />
-            </>
-          )}
-        </main>
+            ))}
+          </div>
+        )}
       </div>
-
-      {/* Modal for creating custom activity heatmap */}
-      <CreateTrackerModal
-        isOpen={isCreateTrackerOpen}
-        onClose={() => setIsCreateTrackerOpen(false)}
-        onCreateTracker={handleCreateTracker}
-      />
-    </div>
+    </main>
   );
 }
