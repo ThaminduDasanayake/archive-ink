@@ -7,7 +7,8 @@ import {
   DEFAULT_LEVEL_DEFS,
   generateSampleContributions,
 } from "@/components/HeatmapGrid";
-import { Plus, LayoutGrid } from "lucide-react";
+import { Plus, SquaresFour } from "@phosphor-icons/react";
+import { Button } from "@/components/ui/button";
 
 // Pre-populate sample trackers for multi-tracker demonstration
 const INITIAL_TRACKERS: Tracker[] = [
@@ -89,39 +90,38 @@ export default function Home() {
         <div className="flex flex-col items-start justify-between gap-4 border-b border-[#30363d] pb-6 sm:flex-row sm:items-center">
           <div className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#30363d] bg-[#161b22] text-emerald-400 shadow-xl">
-              <LayoutGrid className="h-6 w-6" />
+              <SquaresFour className="h-6 w-6" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight text-[#f0f6fc] sm:text-3xl">
+              <h1 className="font-bold tracking-tight text-[#f0f6fc] text-2xl sm:text-3xl">
                 Multi-Tracker Activity Hub
               </h1>
               <p className="text-xs text-[#8b949e] sm:text-sm">
-                Track anything offline with customizable contribution heatmaps placed one after
-                another.
+                Track anything offline with customizable contribution heatmaps placed one after another.
               </p>
             </div>
           </div>
 
-          <button
+          <Button
             onClick={handleAddTracker}
-            className="flex items-center gap-2 rounded-lg bg-[#238636] px-4 py-2 text-xs font-medium text-white shadow-lg transition-all duration-150 hover:bg-[#2ea043] active:scale-95"
+            className="flex items-center gap-2 bg-[#238636] font-medium text-xs text-white shadow-lg hover:bg-[#2ea043] active:scale-95"
           >
             <Plus className="h-4 w-4" />
             <span>Add New Tracker</span>
-          </button>
+          </Button>
         </div>
 
         {/* List of Trackers Placed One After Another */}
         {trackers.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#30363d] bg-[#161b22]/40 p-12 text-center">
             <p className="font-medium text-[#8b949e]">No active trackers.</p>
-            <button
+            <Button
               onClick={handleAddTracker}
-              className="mt-4 flex items-center gap-2 rounded-md bg-[#238636] px-3.5 py-2 text-xs font-medium text-white hover:bg-[#2ea043]"
+              className="mt-4 flex items-center gap-2 bg-[#238636] font-medium text-xs text-white hover:bg-[#2ea043]"
             >
               <Plus className="h-4 w-4" />
               <span>Create Your First Tracker</span>
-            </button>
+            </Button>
           </div>
         ) : (
           <div className="space-y-8">

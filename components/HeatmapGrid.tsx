@@ -1,26 +1,31 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import {
-  addDays,
-  eachDayOfInterval,
   format,
-  getDay,
-  isSameYear,
-  startOfWeek,
   startOfYear,
+  eachDayOfInterval,
+  getDay,
+  startOfWeek,
+  addDays,
+  isSameYear,
 } from "date-fns";
 import {
-  Calendar,
-  Check,
-  ChevronDown,
-  Info,
-  RotateCcw,
-  Settings,
-  Shuffle,
-  Sparkles,
-  Trash2,
-} from "lucide-react";
+  CalendarBlankIcon,
+  GearSixIcon,
+  CaretDownIcon,
+  ArrowCounterClockwiseIcon,
+  ShuffleIcon,
+  TrashIcon,
+  CheckIcon,
+  InfoIcon,
+  SparkleIcon,
+} from "@phosphor-icons/react";
+
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export type ContributionLevel = 0 | 1 | 2 | 3 | 4;
 
@@ -118,7 +123,7 @@ export const THEMES: Record<string, ThemeOption> = {
 export interface Tracker {
   id: string;
   title: string;
-  unitName: string; // e.g., "contributions", "hours", "workouts", "pages"
+  unitName: string;
   colorTheme: string;
   levelDefs: LevelDefinitionsMap;
   contributions: Record<string, ContributionLevel>;
@@ -139,7 +144,7 @@ export function generateSampleContributions(
   const cutoffDate = new Date(year, 7, 2);
 
   let currentDate = yearStart;
-  let seed = 12345;
+  let seed = Math.floor(Math.random() * 1000) + 1;
   const pseudoRandom = () => {
     seed = (seed * 9301 + 49297) % 233280;
     return seed / 233280;
@@ -172,9 +177,8 @@ export function HeatmapGrid({
   year = 2026,
 }: HeatmapGridProps) {
   const [isMouseDown, setIsMouseDown] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
+  const [showSettingsOpen, setShowSettingsOpen] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
-  const [activeTab, setActiveTab] = useState<"theme" | "levels" | "title">("title");
 
   const [hoveredCell, setHoveredCell] = useState<{
     dateStr: string;
@@ -266,7 +270,7 @@ export function HeatmapGrid({
   // Actions
   const handleClearAll = () => {
     onUpdateTracker({ ...tracker, contributions: {} });
-    setShowSettings(false);
+    setShowSettingsOpen(false);
   };
 
   const handleRandomize = () => {
@@ -279,261 +283,226 @@ export function HeatmapGrid({
       })
     );
     onUpdateTracker({ ...tracker, contributions: randomized });
-    setShowSettings(false);
+    setShowSettingsOpen(false);
   };
 
   const handleResetPattern = () => {
-    onUpdateTracker({ ...tracker, contributions: generateSampleContributions(year) });
-    setShowSettings(false);
+    onUpdateTracker({
+      ...tracker,
+      contributions: generateSampleContributions(year),
+    });
+    setShowSettingsOpen(false);
   };
-
-  const settingsRef = useRef<HTMLDivElement>(null);
-
-  // Close settings dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (settingsRef.current && !settingsRef.current.contains(event.target as Node)) {
-        setShowSettings(false);
-      }
-    };
-    if (showSettings) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showSettings]);
 
   const currentThemeObj = THEMES[tracker.colorTheme] || THEMES.github;
 
   return (
     <div
-      className="mx-auto w-full select-none font-sans text-slate-100"
+      className="mx-auto w-full font-sans text-slate-100 select-none"
       onMouseUp={() => setIsMouseDown(false)}
       onMouseLeave={() => setIsMouseDown(false)}
     >
-      {/* Outer Container matching GitHub Dark Card - Elevated z-index when settings open */}
-      <div
-        className={`relative rounded-xl border border-[#30363d] bg-[#0d1117] p-5 shadow-2xl backdrop-blur-md transition-all sm:p-6 ${
-          showSettings ? "z-40" : "z-0"
-        }`}
-      >
+      {/* Outer Container matching GitHub Dark Card */}
+      <div className="relative rounded-xl border border-[#30363d] bg-[#0d1117] p-5 shadow-2xl backdrop-blur-md sm:p-6">
         {/* Top Header Row */}
         <div className="mb-4 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#30363d] bg-[#161b22] text-emerald-400 shadow-inner">
-              <Calendar className="h-5 w-5" />
+              <CalendarBlankIcon className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="font-semibold tracking-tight text-[#f0f6fc] text-lg sm:text-xl">
+              <h2 className="text-lg font-semibold tracking-tight text-[#f0f6fc] sm:text-xl">
                 {totalContributions.toLocaleString()} {tracker.unitName || "contributions"} in{" "}
                 {year}
               </h2>
-              <p className="font-medium text-xs text-[#8b949e]">{tracker.title}</p>
+              <p className="text-xs font-medium text-[#8b949e]">{tracker.title}</p>
             </div>
           </div>
 
-          {/* Contribution Settings Dropdown Button */}
-          <div className="relative" ref={settingsRef}>
-            <button
-              onClick={() => setShowSettings((prev) => !prev)}
-              className="flex items-center gap-2 rounded-md border border-[#30363d] bg-[#21262d] px-3 py-1.5 text-xs font-medium text-[#c9d1d9] transition-all duration-150 hover:border-[#8b949e] hover:bg-[#30363d] hover:text-white"
+          {/* Shadcn Popover for Contribution Settings */}
+          <Popover open={showSettingsOpen} onOpenChange={setShowSettingsOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2 border-[#30363d] bg-[#21262d] text-[#c9d1d9] hover:border-[#8b949e] hover:bg-[#30363d] hover:text-white"
+              >
+                <GearSixIcon className="h-4 w-4 text-[#8b949e]" />
+                <span>Contribution settings</span>
+                <CaretDownIcon className="h-3.5 w-3.5" />
+              </Button>
+            </PopoverTrigger>
+
+            <PopoverContent
+              align="end"
+              sideOffset={8}
+              className="w-80 border-[#30363d] bg-[#161b22] p-4 text-xs text-[#c9d1d9] shadow-2xl"
             >
-              <Settings className="h-3.5 w-3.5" />
-              <span>Contribution settings</span>
-              <ChevronDown
-                className={`h-3.5 w-3.5 transition-transform duration-200 ${
-                  showSettings ? "rotate-180" : ""
-                }`}
-              />
-            </button>
+              {/* Shadcn Tabs inside Popover */}
+              <Tabs defaultValue="title" className="w-full">
+                <TabsList className="mb-3 grid w-full grid-cols-3 border-b border-[#30363d] bg-transparent p-0">
+                  <TabsTrigger
+                    value="title"
+                    className="border-b-2 text-xs data-[state=active]:border-[#58a6ff] data-[state=active]:bg-transparent data-[state=active]:text-[#58a6ff]"
+                  >
+                    Details
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="levels"
+                    className="border-b-2 text-xs data-[state=active]:border-[#58a6ff] data-[state=active]:bg-transparent data-[state=active]:text-[#58a6ff]"
+                  >
+                    Levels
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="theme"
+                    className="border-b-2 text-xs data-[state=active]:border-[#58a6ff] data-[state=active]:bg-transparent data-[state=active]:text-[#58a6ff]"
+                  >
+                    Theme
+                  </TabsTrigger>
+                </TabsList>
 
-            {/* Dropdown Menu & Configuration Panel */}
-            {showSettings && (
-              <div className="absolute right-0 z-50 mt-2 w-80 rounded-lg border border-[#30363d] bg-[#161b22] p-4 text-xs shadow-2xl ring-1 ring-black/50">
-                {/* Settings Navigation Tabs */}
-                <div className="mb-3 flex border-b border-[#30363d] pb-2 font-medium">
-                  <button
-                    onClick={() => setActiveTab("title")}
-                    className={`mr-3 pb-1 transition-colors ${
-                      activeTab === "title"
-                        ? "border-b-2 border-[#58a6ff] text-[#58a6ff]"
-                        : "text-[#8b949e] hover:text-[#c9d1d9]"
-                    }`}
-                  >
-                    Tracker Details
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("levels")}
-                    className={`mr-3 pb-1 transition-colors ${
-                      activeTab === "levels"
-                        ? "border-b-2 border-[#58a6ff] text-[#58a6ff]"
-                        : "text-[#8b949e] hover:text-[#c9d1d9]"
-                    }`}
-                  >
-                    Level Definitions
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("theme")}
-                    className={`pb-1 transition-colors ${
-                      activeTab === "theme"
-                        ? "border-b-2 border-[#58a6ff] text-[#58a6ff]"
-                        : "text-[#8b949e] hover:text-[#c9d1d9]"
-                    }`}
-                  >
-                    Color Theme
-                  </button>
-                </div>
+                {/* Tab 1: Tracker Details */}
+                <TabsContent value="title" className="space-y-3 pt-1">
+                  <div>
+                    <label className="mb-1 block text-[10px] font-semibold tracking-wider text-[#8b949e] uppercase">
+                      Tracker Title
+                    </label>
+                    <Input
+                      type="text"
+                      value={tracker.title}
+                      onChange={(e) => onUpdateTracker({ ...tracker, title: e.target.value })}
+                      placeholder="e.g. Gym Workouts 2026"
+                      className="border-[#30363d] bg-[#0d1117] text-xs text-[#f0f6fc] focus-visible:ring-[#58a6ff]"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-[10px] font-semibold tracking-wider text-[#8b949e] uppercase">
+                      Unit Name
+                    </label>
+                    <Input
+                      type="text"
+                      value={tracker.unitName}
+                      onChange={(e) => onUpdateTracker({ ...tracker, unitName: e.target.value })}
+                      placeholder="e.g. contributions, workouts, hours"
+                      className="border-[#30363d] bg-[#0d1117] text-xs text-[#f0f6fc] focus-visible:ring-[#58a6ff]"
+                    />
+                  </div>
+                </TabsContent>
 
-                {/* Tab 1: Tracker Title & Unit */}
-                {activeTab === "title" && (
-                  <div className="space-y-3">
-                    <div>
-                      <label className="mb-1 block text-[10px] font-semibold text-[#8b949e] uppercase">
-                        Tracker Title
-                      </label>
-                      <input
-                        type="text"
-                        value={tracker.title}
-                        onChange={(e) => onUpdateTracker({ ...tracker, title: e.target.value })}
-                        placeholder="e.g. Gym Workouts 2026"
-                        className="w-full rounded border border-[#30363d] bg-[#0d1117] px-2.5 py-1.5 text-xs text-[#f0f6fc] focus:border-[#58a6ff] focus:outline-none"
+                {/* Tab 2: Customize Level Definitions */}
+                <TabsContent value="levels" className="space-y-2 pt-1">
+                  <p className="mb-2 text-[11px] text-[#8b949e]">
+                    Define label & count for each level:
+                  </p>
+                  {([1, 2, 3, 4] as ContributionLevel[]).map((lvl) => (
+                    <div key={lvl} className="flex items-center gap-2">
+                      <span
+                        className={`h-3 w-3 rounded-xs border ${currentThemeObj.levels[lvl]} ${currentThemeObj.borderLevels[lvl]}`}
                       />
-                    </div>
-                    <div>
-                      <label className="mb-1 block text-[10px] font-semibold text-[#8b949e] uppercase">
-                        Unit Name
-                      </label>
-                      <input
+                      <span className="w-9 font-medium text-[#c9d1d9]">Lvl {lvl}</span>
+                      <Input
                         type="text"
-                        value={tracker.unitName}
-                        onChange={(e) => onUpdateTracker({ ...tracker, unitName: e.target.value })}
-                        placeholder="e.g. contributions, workouts, hours"
-                        className="w-full rounded border border-[#30363d] bg-[#0d1117] px-2.5 py-1.5 text-xs text-[#f0f6fc] focus:border-[#58a6ff] focus:outline-none"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* Tab 2: Customize What Each Level Defines */}
-                {activeTab === "levels" && (
-                  <div className="space-y-2">
-                    <p className="mb-2 text-[11px] text-[#8b949e]">
-                      Customize label and numeric weight for each level:
-                    </p>
-                    {([1, 2, 3, 4] as ContributionLevel[]).map((lvl) => (
-                      <div key={lvl} className="flex items-center gap-2">
-                        <span
-                          className={`h-3 w-3 rounded-[2px] border ${currentThemeObj.levels[lvl]} ${currentThemeObj.borderLevels[lvl]}`}
-                        />
-                        <span className="w-10 font-medium text-[#c9d1d9]">Lvl {lvl}</span>
-                        <input
-                          type="text"
-                          value={tracker.levelDefs[lvl]?.label || ""}
-                          onChange={(e) => {
-                            const newDefs = { ...tracker.levelDefs };
-                            newDefs[lvl] = {
-                              ...newDefs[lvl],
-                              label: e.target.value,
-                            };
-                            onUpdateTracker({ ...tracker, levelDefs: newDefs });
-                          }}
-                          placeholder="Label (e.g. 1 hour)"
-                          className="flex-1 rounded border border-[#30363d] bg-[#0d1117] px-2 py-1 text-[11px] text-[#f0f6fc] focus:border-[#58a6ff] focus:outline-none"
-                        />
-                        <input
-                          type="number"
-                          value={tracker.levelDefs[lvl]?.count ?? lvl}
-                          onChange={(e) => {
-                            const val = parseInt(e.target.value, 10) || 0;
-                            const newDefs = { ...tracker.levelDefs };
-                            newDefs[lvl] = {
-                              ...newDefs[lvl],
-                              count: val,
-                            };
-                            onUpdateTracker({ ...tracker, levelDefs: newDefs });
-                          }}
-                          title="Numeric Weight"
-                          className="w-14 rounded border border-[#30363d] bg-[#0d1117] px-2 py-1 text-[11px] text-[#f0f6fc] focus:border-[#58a6ff] focus:outline-none"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Tab 3: Color Themes */}
-                {activeTab === "theme" && (
-                  <div className="grid grid-cols-1 gap-1">
-                    {Object.values(THEMES).map((theme) => (
-                      <button
-                        key={theme.id}
-                        onClick={() => onUpdateTracker({ ...tracker, colorTheme: theme.id })}
-                        className={`flex items-center justify-between rounded px-2.5 py-1.5 text-left transition-colors ${
-                          tracker.colorTheme === theme.id
-                            ? "bg-[#1f6feb]/20 text-[#58a6ff]"
-                            : "text-[#c9d1d9] hover:bg-[#21262d]"
-                        }`}
-                      >
-                        <span className="font-medium">{theme.name}</span>
-                        <div className="flex items-center gap-1">
-                          {theme.levels.slice(1).map((lvl, idx) => (
-                            <span key={idx} className={`h-2.5 w-2.5 rounded-[1px] ${lvl}`} />
-                          ))}
-                          {tracker.colorTheme === theme.id && (
-                            <Check className="ml-1.5 h-3.5 w-3.5" />
-                          )}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {/* Quick Presets & Delete */}
-                <div className="mt-4 border-t border-[#30363d] pt-3">
-                  <div className="mb-2 text-[10px] font-semibold tracking-wider text-[#8b949e] uppercase">
-                    Presets & Actions
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <button
-                      onClick={handleResetPattern}
-                      className="flex items-center gap-2 rounded px-2.5 py-1.5 text-[#c9d1d9] transition-colors hover:bg-[#21262d]"
-                    >
-                      <RotateCcw className="h-3.5 w-3.5 text-[#3fb950]" />
-                      <span>Reset Sample Data</span>
-                    </button>
-                    <button
-                      onClick={handleRandomize}
-                      className="flex items-center gap-2 rounded px-2.5 py-1.5 text-[#c9d1d9] transition-colors hover:bg-[#21262d]"
-                    >
-                      <Shuffle className="h-3.5 w-3.5 text-[#d29922]" />
-                      <span>Randomize Activity</span>
-                    </button>
-                    <button
-                      onClick={handleClearAll}
-                      className="flex items-center gap-2 rounded px-2.5 py-1.5 text-[#c9d1d9] transition-colors hover:bg-[#21262d]"
-                    >
-                      <Trash2 className="h-3.5 w-3.5 text-[#8b949e]" />
-                      <span>Clear All Cells</span>
-                    </button>
-
-                    {onDeleteTracker && (
-                      <button
-                        onClick={() => {
-                          if (confirm(`Delete "${tracker.title}"?`)) {
-                            onDeleteTracker(tracker.id);
-                          }
+                        value={tracker.levelDefs[lvl]?.label || ""}
+                        onChange={(e) => {
+                          const newDefs = { ...tracker.levelDefs };
+                          newDefs[lvl] = {
+                            ...newDefs[lvl],
+                            label: e.target.value,
+                          };
+                          onUpdateTracker({ ...tracker, levelDefs: newDefs });
                         }}
-                        className="mt-1 flex items-center gap-2 rounded px-2.5 py-1.5 font-medium text-[#f85149] transition-colors hover:bg-[#f85149]/10"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                        <span>Delete Tracker</span>
-                      </button>
-                    )}
-                  </div>
+                        placeholder="Label"
+                        className="h-7 flex-1 border-[#30363d] bg-[#0d1117] px-2 text-[11px] text-[#f0f6fc]"
+                      />
+                      <Input
+                        type="number"
+                        value={tracker.levelDefs[lvl]?.count ?? lvl}
+                        onChange={(e) => {
+                          const val = parseInt(e.target.value, 10) || 0;
+                          const newDefs = { ...tracker.levelDefs };
+                          newDefs[lvl] = {
+                            ...newDefs[lvl],
+                            count: val,
+                          };
+                          onUpdateTracker({ ...tracker, levelDefs: newDefs });
+                        }}
+                        className="h-7 w-12 border-[#30363d] bg-[#0d1117] px-1 text-center text-[11px] text-[#f0f6fc]"
+                      />
+                    </div>
+                  ))}
+                </TabsContent>
+
+                {/* Tab 3: Themes */}
+                <TabsContent value="theme" className="grid grid-cols-1 gap-1 pt-1">
+                  {Object.values(THEMES).map((theme) => (
+                    <button
+                      key={theme.id}
+                      onClick={() => onUpdateTracker({ ...tracker, colorTheme: theme.id })}
+                      className={`flex items-center justify-between rounded px-2.5 py-1.5 text-left transition-colors ${
+                        tracker.colorTheme === theme.id
+                          ? "bg-[#1f6feb]/20 text-[#58a6ff]"
+                          : "text-[#c9d1d9] hover:bg-[#21262d]"
+                      }`}
+                    >
+                      <span className="font-medium">{theme.name}</span>
+                      <div className="flex items-center gap-1">
+                        {theme.levels.slice(1).map((lvl, idx) => (
+                          <span key={idx} className={`h-2.5 w-2.5 rounded-[1px] ${lvl}`} />
+                        ))}
+                        {tracker.colorTheme === theme.id && (
+                          <CheckIcon className="ml-1.5 h-3.5 w-3.5" />
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </TabsContent>
+              </Tabs>
+
+              {/* Presets & Delete Actions */}
+              <div className="mt-4 border-t border-[#30363d] pt-3">
+                <div className="mb-2 text-[10px] font-semibold tracking-wider text-[#8b949e] uppercase">
+                  Presets & Actions
+                </div>
+                <div className="flex flex-col gap-1">
+                  <button
+                    onClick={handleResetPattern}
+                    className="flex items-center gap-2 rounded px-2.5 py-1.5 text-[#c9d1d9] transition-colors hover:bg-[#21262d]"
+                  >
+                    <ArrowCounterClockwiseIcon className="h-3.5 w-3.5 text-[#3fb950]" />
+                    <span>Reset Sample Data</span>
+                  </button>
+                  <button
+                    onClick={handleRandomize}
+                    className="flex items-center gap-2 rounded px-2.5 py-1.5 text-[#c9d1d9] transition-colors hover:bg-[#21262d]"
+                  >
+                    <ShuffleIcon className="h-3.5 w-3.5 text-[#d29922]" />
+                    <span>Randomize Activity</span>
+                  </button>
+                  <button
+                    onClick={handleClearAll}
+                    className="flex items-center gap-2 rounded px-2.5 py-1.5 text-[#c9d1d9] transition-colors hover:bg-[#21262d]"
+                  >
+                    <TrashIcon className="h-3.5 w-3.5 text-[#8b949e]" />
+                    <span>Clear All Cells</span>
+                  </button>
+
+                  {onDeleteTracker && (
+                    <button
+                      onClick={() => {
+                        if (confirm(`Delete "${tracker.title}"?`)) {
+                          onDeleteTracker(tracker.id);
+                        }
+                      }}
+                      className="mt-1 flex items-center gap-2 rounded px-2.5 py-1.5 font-medium text-[#f85149] transition-colors hover:bg-[#f85149]/10"
+                    >
+                      <TrashIcon className="h-3.5 w-3.5" />
+                      <span>Delete Tracker</span>
+                    </button>
+                  )}
                 </div>
               </div>
-            )}
-          </div>
+            </PopoverContent>
+          </Popover>
         </div>
 
         {/* Heatmap Grid Layout Card */}
@@ -558,7 +527,7 @@ export function HeatmapGrid({
 
               {/* Grid Body: Left Day Sidebar + Weeks Columns */}
               <div className="flex gap-1.5">
-                <div className="flex flex-col justify-between py-[1px] pr-2 text-[10px] text-[#8b949e]">
+                <div className="flex flex-col justify-between py-px pr-2 text-[10px] text-[#8b949e]">
                   <span className="h-3 leading-3" />
                   <span className="h-3 leading-3 font-medium">Mon</span>
                   <span className="h-3 leading-3" />
@@ -569,12 +538,12 @@ export function HeatmapGrid({
                 </div>
 
                 <div
-                  className="flex flex-1 gap-[3px]"
+                  className="flex flex-1 gap-0.75"
                   onMouseDown={() => setIsMouseDown(true)}
                   onMouseUp={() => setIsMouseDown(false)}
                 >
                   {weeks.map((week, weekIdx) => (
-                    <div key={weekIdx} className="flex flex-col gap-[3px]">
+                    <div key={weekIdx} className="flex flex-col gap-0.75">
                       {week.map((day) => {
                         const level = (tracker.contributions[day.dateStr] ||
                           0) as ContributionLevel;
@@ -606,10 +575,10 @@ export function HeatmapGrid({
                               }
                             }}
                             onMouseLeave={() => setHoveredCell(null)}
-                            className={`h-[10px] w-[10px] rounded-[2px] border transition-all duration-100 sm:h-[11px] sm:w-[11px] ${
+                            className={`h-2.5 w-2.5 rounded-xs border transition-all duration-100 sm:h-2.75 sm:w-2.75 ${
                               !day.inYear
                                 ? "invisible"
-                                : `${levelClass} ${borderClass} border-none hover:z-20 hover:scale-125 hover:border-[#8b949e] hover:shadow-lg`
+                                : `${levelClass} ${borderClass} hover:z-20 hover:scale-125 hover:border-[#8b949e] hover:shadow-lg`
                             }`}
                           />
                         );
@@ -627,7 +596,7 @@ export function HeatmapGrid({
               onClick={() => setShowInfoModal(true)}
               className="flex items-center gap-1.5 font-medium text-[#8b949e] transition-colors hover:text-[#58a6ff]"
             >
-              <Info className="h-3.5 w-3.5" />
+              <InfoIcon className="h-3.5 w-3.5" />
               <span>Learn how we count contributions</span>
             </button>
 
@@ -639,7 +608,7 @@ export function HeatmapGrid({
                   <div
                     key={idx}
                     title={`Level ${idx}: ${def?.label || `Level ${idx}`}`}
-                    className={`h-2.5 w-2.5 cursor-default rounded-[2px] border ${lvlClass} ${currentThemeObj.borderLevels[idx]}`}
+                    className={`h-2.5 w-2.5 cursor-default rounded-xs border ${lvlClass} ${currentThemeObj.borderLevels[idx]}`}
                   />
                 );
               })}
@@ -670,7 +639,7 @@ export function HeatmapGrid({
               {tracker.unitName || "units"}) • Click to cycle
             </div>
           </div>
-          <div className="mx-auto -mt-[1px] h-0 w-0 border-x-4 border-t-4 border-x-transparent border-t-[#30363d]" />
+          <div className="mx-auto -mt-px h-0 w-0 border-x-4 border-t-4 border-x-transparent border-t-[#30363d]" />
         </div>
       )}
 
@@ -680,7 +649,7 @@ export function HeatmapGrid({
           <div className="w-full max-w-md rounded-xl border border-[#30363d] bg-[#161b22] p-6 text-slate-100 shadow-2xl">
             <div className="mb-4 flex items-center justify-between border-b border-[#30363d] pb-3">
               <h3 className="flex items-center gap-2 text-lg font-semibold text-[#f0f6fc]">
-                <Sparkles className="h-5 w-5 text-emerald-400" />
+                <SparkleIcon className="h-5 w-5 text-emerald-400" />
                 Tracker: {tracker.title}
               </h3>
               <button
