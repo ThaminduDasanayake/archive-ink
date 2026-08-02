@@ -1,264 +1,243 @@
 "use client";
 
-import React, { useMemo } from "react";
-import { addDays, format, startOfWeek, subDays } from "date-fns";
-import { Sparkles } from "lucide-react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { eachDayOfInterval, format, isSameYear, startOfWeek } from "date-fns";
+import { CalendarBlankIcon } from "@phosphor-icons/react";
 
-export interface ActivityData {
-  date: string; // YYYY-MM-DD
-  count: number;
-  entryCount?: number;
-}
+import { ContributionLevel, HeatmapGridProps, HoveredCellInfo } from "./heatmap/types";
+import { generateSampleContributions, THEMES } from "./heatmap/constants";
+import { HeatmapSettingsPopover } from "@/components/heatmap";
+import { HeatmapGridDisplay } from "@/components/heatmap";
+import { HeatmapTooltip } from "@/components/heatmap";
+import { HeatmapInfoModal } from "@/components/heatmap";
+import { HeatmapConfirmDialogs } from "@/components/heatmap";
 
-interface HeatmapGridProps {
-  title: string;
-  colorScheme?: string; // emerald | violet | amber | sky | rose
-  activities: ActivityData[];
-  selectedDate?: string | null;
-  onSelectDate: (date: string) => void;
-  onCellClickToggle?: (date: string) => void;
-  tag?: string | null;
-  isDefault?: boolean;
-}
-
-const COLOR_CLASSES: Record<string, string[]> = {
-  emerald: [
-    "bg-slate-100 border-slate-200/80",
-    "bg-emerald-100 border-emerald-300 text-emerald-800",
-    "bg-emerald-300 border-emerald-400 text-emerald-950",
-    "bg-emerald-500 border-emerald-600 text-white",
-    "bg-emerald-700 border-emerald-800 text-white shadow-xs",
-  ],
-  violet: [
-    "bg-slate-100 border-slate-200/80",
-    "bg-violet-100 border-violet-300 text-violet-800",
-    "bg-violet-300 border-violet-400 text-violet-950",
-    "bg-violet-500 border-violet-600 text-white",
-    "bg-violet-700 border-violet-800 text-white shadow-xs",
-  ],
-  amber: [
-    "bg-slate-100 border-slate-200/80",
-    "bg-amber-100 border-amber-300 text-amber-800",
-    "bg-amber-300 border-amber-400 text-amber-950",
-    "bg-amber-500 border-amber-600 text-white",
-    "bg-amber-700 border-amber-800 text-white shadow-xs",
-  ],
-  sky: [
-    "bg-slate-100 border-slate-200/80",
-    "bg-sky-100 border-sky-300 text-sky-800",
-    "bg-sky-300 border-sky-400 text-sky-950",
-    "bg-sky-500 border-sky-600 text-white",
-    "bg-sky-700 border-sky-800 text-white shadow-xs",
-  ],
-  rose: [
-    "bg-slate-100 border-slate-200/80",
-    "bg-rose-100 border-rose-300 text-rose-800",
-    "bg-rose-300 border-rose-400 text-rose-950",
-    "bg-rose-500 border-rose-600 text-white",
-    "bg-rose-700 border-rose-800 text-white shadow-xs",
-  ],
-};
-
-const THEME_ACCENTS: Record<string, string> = {
-  emerald: "text-emerald-700 border-emerald-300 bg-emerald-50",
-  violet: "text-violet-700 border-violet-300 bg-violet-50",
-  amber: "text-amber-700 border-amber-300 bg-amber-50",
-  sky: "text-sky-700 border-sky-300 bg-sky-50",
-  rose: "text-rose-700 border-rose-300 bg-rose-50",
-};
+// Re-export types and constants for backwards compatibility
+export * from "./heatmap/types";
+export * from "./heatmap/constants";
 
 export function HeatmapGrid({
-  title,
-  colorScheme = "emerald",
-  activities,
-  selectedDate,
-  onSelectDate,
-  onCellClickToggle,
-  tag,
-  isDefault,
+  tracker,
+  onUpdateTracker,
+  onDeleteTracker,
+  year = 2026,
 }: HeatmapGridProps) {
-  const scheme = COLOR_CLASSES[colorScheme] ? colorScheme : "emerald";
-  const colors = COLOR_CLASSES[scheme];
-  const accentClass = THEME_ACCENTS[scheme];
+  const [isMouseDown, setIsMouseDown] = useState(false);
+  const [showSettingsOpen, setShowSettingsOpen] = useState(false);
+  const [showInfoModal, setShowInfoModal] = useState(false);
 
-  // Map activities by date string YYYY-MM-DD
-  const activityMap = useMemo(() => {
-    const map = new Map<string, ActivityData>();
-    for (const act of activities) {
-      map.set(act.date, act);
-    }
-    return map;
-  }, [activities]);
+  // Draft inputs for Title & Unit Name
+  const [draftTitle, setDraftTitle] = useState(tracker.title);
+  const [draftUnitName, setDraftUnitName] = useState(tracker.unitName);
 
-  // Generate 52 weeks (364 days) up to today
+  // Sync draft inputs when tracker prop or popover visibility updates
+  useEffect(() => {
+    setDraftTitle(tracker.title);
+    setDraftUnitName(tracker.unitName);
+  }, [tracker.title, tracker.unitName, showSettingsOpen]);
+
+  // Alert Dialog states
+  const [showConfirmDetailsDialog, setShowConfirmDetailsDialog] = useState(false);
+  const [showClearAllDialog, setShowClearAllDialog] = useState(false);
+  const [showDeleteTrackerDialog, setShowDeleteTrackerDialog] = useState(false);
+
+  const [hoveredCell, setHoveredCell] = useState<HoveredCellInfo | null>(null);
+
+  // Generate week columns for year 2026
   const { weeks, monthHeaders } = useMemo(() => {
-    const today = new Date();
-    // Start 52 weeks ago from the beginning of that week
-    const startDate = startOfWeek(subDays(today, 52 * 7 - 1), { weekStartsOn: 0 });
+    const Jan1 = new Date(year, 0, 1);
+    const Dec31 = new Date(year, 11, 31);
+    const startDate = startOfWeek(Jan1, { weekStartsOn: 0 });
 
-    const weeksList: { date: Date; dateStr: string; count: number; entryCount: number }[][] = [];
-    const monthsMap: { month: string; colIndex: number }[] = [];
+    const allDays = eachDayOfInterval({ start: startDate, end: Dec31 });
 
-    let currentPointer = startDate;
-    let lastMonth = "";
+    const weeksList: { date: Date; dateStr: string; inYear: boolean }[][] = [];
+    let currentWeek: { date: Date; dateStr: string; inYear: boolean }[] = [];
 
-    for (let w = 0; w < 52; w++) {
-      const weekDays = [];
-      const monthName = format(currentPointer, "MMM");
+    allDays.forEach((day) => {
+      const dateStr = format(day, "yyyy-MM-dd");
+      const inYear = isSameYear(day, Jan1);
+      currentWeek.push({ date: day, dateStr, inYear });
 
-      if (monthName !== lastMonth) {
-        monthsMap.push({ month: monthName, colIndex: w });
-        lastMonth = monthName;
+      if (currentWeek.length === 7) {
+        weeksList.push(currentWeek);
+        currentWeek = [];
       }
+    });
 
-      for (let d = 0; d < 7; d++) {
-        const dateStr = format(currentPointer, "yyyy-MM-dd");
-        const act = activityMap.get(dateStr);
-        weekDays.push({
-          date: new Date(currentPointer),
-          dateStr,
-          count: act ? act.count : 0,
-          entryCount: act ? act.entryCount || (act.count > 0 ? 1 : 0) : 0,
-        });
-        currentPointer = addDays(currentPointer, 1);
-      }
-      weeksList.push(weekDays);
+    if (currentWeek.length > 0) {
+      weeksList.push(currentWeek);
     }
 
-    return { weeks: weeksList, monthHeaders: monthsMap };
-  }, [activityMap]);
+    const cols: { month: string; colSpan: number }[] = [];
+    let currentMonthName = "";
+    let currentSpan = 0;
 
-  // Intensity calculation function (0 to 4)
-  const getIntensityLevel = (count: number): number => {
-    if (count <= 0) return 0;
-    if (count <= 100) return 1;
-    if (count <= 350) return 2;
-    if (count <= 700) return 3;
-    return 4;
-  };
+    weeksList.forEach((week) => {
+      const validDay = week.find((day) => day.inYear);
+      if (!validDay) return;
 
-  const totalWords = useMemo(
-    () => activities.reduce((acc, curr) => acc + curr.count, 0),
-    [activities]
+      const monthName = format(validDay.date, "MMM");
+
+      if (monthName !== currentMonthName) {
+        if (currentSpan > 0) {
+          cols.push({ month: currentMonthName, colSpan: currentSpan });
+        }
+        currentMonthName = monthName;
+        currentSpan = 1;
+      } else {
+        currentSpan += 1;
+      }
+    });
+
+    if (currentSpan > 0) {
+      cols.push({ month: currentMonthName, colSpan: currentSpan });
+    }
+
+    return { weeks: weeksList, monthHeaders: cols };
+  }, [year]);
+
+  // Compute total value based on tracker's level definitions
+  const totalContributions = useMemo(() => {
+    return Object.values(tracker.contributions).reduce((acc: number, level: ContributionLevel) => {
+      const count = tracker.levelDefs[level]?.count ?? level;
+      return acc + count;
+    }, 0);
+  }, [tracker.contributions, tracker.levelDefs]);
+
+  // Handle cell click (Cycles 0 -> 1 -> 2 -> 3 -> 4 -> 0)
+  const handleCellAction = useCallback(
+    (dateStr: string, isRightClick = false) => {
+      const currentLevel = tracker.contributions[dateStr] || 0;
+      let nextLevel: ContributionLevel;
+
+      if (isRightClick) {
+        nextLevel = currentLevel > 0 ? ((currentLevel - 1) as ContributionLevel) : 0;
+      } else {
+        nextLevel = ((currentLevel + 1) % 5) as ContributionLevel;
+      }
+
+      const nextContribs = { ...tracker.contributions };
+      if (nextLevel === 0) {
+        delete nextContribs[dateStr];
+      } else {
+        nextContribs[dateStr] = nextLevel;
+      }
+
+      onUpdateTracker({
+        ...tracker,
+        contributions: nextContribs,
+      });
+    },
+    [tracker, onUpdateTracker]
   );
 
-  const activeDays = useMemo(() => activities.filter((a) => a.count > 0).length, [activities]);
+  const handleMouseEnterCell = (dateStr: string) => {
+    if (isMouseDown) {
+      handleCellAction(dateStr);
+    }
+  };
+
+  // Actions
+  const handleClearAll = () => {
+    onUpdateTracker({ ...tracker, contributions: {} });
+    setShowSettingsOpen(false);
+  };
+
+  const handleResetPattern = () => {
+    onUpdateTracker({
+      ...tracker,
+      contributions: generateSampleContributions(year),
+    });
+    setShowSettingsOpen(false);
+  };
+
+  const currentThemeObj = THEMES[tracker.colorTheme] || THEMES.github;
 
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-      {/* Tracker Header */}
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/80 pb-3">
-        <div className="flex items-center space-x-2.5">
-          <div
-            className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-semibold tracking-wider uppercase ${accentClass}`}
-          >
-            <Sparkles className="h-3.5 w-3.5" />
-            {isDefault ? "Primary Track" : tag ? `#${tag}` : "Custom Track"}
-          </div>
-          <h3 className="font-mono text-sm font-bold tracking-wide text-slate-800">{title}</h3>
-        </div>
-
-        <div className="flex items-center space-x-4 font-mono text-xs text-slate-500">
-          <div>
-            <span className="font-bold text-slate-800">{activeDays}</span> active days
-          </div>
-          <div>
-            <span className="font-bold text-slate-800">{totalWords.toLocaleString()}</span> total
-            count
-          </div>
-        </div>
-      </div>
-
-      {/* Grid Container with Horizontal Scroll fallback */}
-      <div className="scrollbar-thin overflow-x-auto pb-2">
-        <div className="min-w-180 select-none">
-          {/* Month Labels */}
-          <div className="mb-1.5 flex pl-8 font-mono text-[10px] text-slate-500">
-            {monthHeaders.map((m, idx) => (
-              <div
-                key={idx}
-                style={{
-                  gridColumnStart: m.colIndex + 1,
-                  minWidth: `${(52 / monthHeaders.length) * 12}px`,
-                }}
-                className="text-left font-medium"
-              >
-                {m.month}
-              </div>
-            ))}
-          </div>
-
-          {/* Grid Layout (7 Rows x 52 Columns) */}
-          <div className="flex gap-1">
-            {/* Weekday Sidebar */}
-            <div className="flex flex-col justify-between py-0.5 pr-2 font-mono text-[9px] text-slate-400">
-              <span>Sun</span>
-              <span>Mon</span>
-              <span>Tue</span>
-              <span>Wed</span>
-              <span>Thu</span>
-              <span>Fri</span>
-              <span>Sat</span>
+    <div
+      className="mx-auto w-full font-sans text-slate-100 select-none"
+      onMouseUp={() => setIsMouseDown(false)}
+      onMouseLeave={() => setIsMouseDown(false)}
+    >
+      {/* Outer Container matching GitHub Dark Card */}
+      <div className="relative rounded-xl border border-[#30363d] bg-[#0d1117] p-5 shadow-2xl backdrop-blur-md sm:p-6">
+        {/* Top Header Row */}
+        <div className="mb-4 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#30363d] bg-[#161b22] text-emerald-400 shadow-inner">
+              <CalendarBlankIcon className="h-5 w-5" />
             </div>
-
-            {/* 52 Columns of Weeks */}
-            <div className="flex flex-1 gap-1">
-              {weeks.map((week, weekIdx) => (
-                <div key={weekIdx} className="flex flex-col gap-1">
-                  {week.map((day) => {
-                    const level = getIntensityLevel(day.count);
-                    const colorClass = colors[level];
-                    const isSelected = selectedDate === day.dateStr;
-
-                    return (
-                      <button
-                        key={day.dateStr}
-                        onClick={() => {
-                          onSelectDate(day.dateStr);
-                          if (onCellClickToggle) {
-                            onCellClickToggle(day.dateStr);
-                          }
-                        }}
-                        title={`${format(day.date, "EEEE, MMM d, yyyy")}: ${day.count} words / activity (${day.entryCount} entries)`}
-                        className={`group/tile relative h-3 w-3 rounded-[3px] border transition-all duration-150 sm:h-3.5 sm:w-3.5 ${colorClass} ${
-                          isSelected
-                            ? "z-10 scale-125 ring-2 ring-emerald-500"
-                            : "hover:z-10 hover:scale-125 hover:border-slate-400"
-                        }`}
-                      >
-                        {/* Tooltip on hover */}
-                        <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 hidden -translate-x-1/2 group-hover/tile:block">
-                          <div className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 font-mono text-[10px] whitespace-nowrap text-slate-800 shadow-xl">
-                            <p className="font-semibold text-emerald-600">
-                              {format(day.date, "MMM d, yyyy")}
-                            </p>
-                            <p className="text-slate-600">
-                              {day.count} {day.count === 1 ? "word/unit" : "words/units"} •{" "}
-                              {day.entryCount} {day.entryCount === 1 ? "entry" : "entries"}
-                            </p>
-                          </div>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              ))}
+            <div>
+              <h2 className="text-lg font-semibold tracking-tight text-[#f0f6fc] sm:text-xl">
+                {totalContributions.toLocaleString()} {tracker.unitName || "contributions"} in{" "}
+                {year}
+              </h2>
+              <p className="text-xs font-medium text-[#8b949e]">{tracker.title}</p>
             </div>
           </div>
+
+          {/* Popover Settings */}
+          <HeatmapSettingsPopover
+            tracker={tracker}
+            showSettingsOpen={showSettingsOpen}
+            setShowSettingsOpen={setShowSettingsOpen}
+            draftTitle={draftTitle}
+            setDraftTitle={setDraftTitle}
+            draftUnitName={draftUnitName}
+            setDraftUnitName={setDraftUnitName}
+            onUpdateTracker={onUpdateTracker}
+            onDeleteTracker={onDeleteTracker}
+            currentThemeObj={currentThemeObj}
+            onRequestConfirmDetails={() => setShowConfirmDetailsDialog(true)}
+            onRequestClearAll={() => setShowClearAllDialog(true)}
+            onRequestDeleteTracker={() => setShowDeleteTrackerDialog(true)}
+            handleResetPattern={handleResetPattern}
+          />
         </div>
+
+        {/* Heatmap Grid Layout Card */}
+        <HeatmapGridDisplay
+          weeks={weeks}
+          monthHeaders={monthHeaders}
+          tracker={tracker}
+          currentThemeObj={currentThemeObj}
+          handleCellAction={handleCellAction}
+          handleMouseEnterCell={handleMouseEnterCell}
+          setIsMouseDown={setIsMouseDown}
+          setHoveredCell={setHoveredCell}
+          setShowInfoModal={setShowInfoModal}
+        />
       </div>
 
-      {/* Heatmap Legend */}
-      <div className="mt-3 flex items-center justify-between border-t border-slate-200/80 pt-2 font-mono text-[11px] text-slate-500">
-        <span className="text-[10px]">Click any cell to filter notes or log activity</span>
-        <div className="flex items-center space-x-1.5">
-          <span className="mr-1 text-[10px]">Less</span>
-          {colors.map((c, i) => (
-            <div key={i} className={`h-3 w-3 rounded-[2.5px] border ${c}`} />
-          ))}
-          <span className="ml-1 text-[10px]">More</span>
-        </div>
-      </div>
+      {/* Floating Tooltip */}
+      <HeatmapTooltip hoveredCell={hoveredCell} unitName={tracker.unitName} />
+
+      {/* Info Modal */}
+      <HeatmapInfoModal
+        showInfoModal={showInfoModal}
+        setShowInfoModal={setShowInfoModal}
+        tracker={tracker}
+        currentThemeObj={currentThemeObj}
+      />
+
+      {/* Confirmation Alert Dialogs */}
+      <HeatmapConfirmDialogs
+        tracker={tracker}
+        draftTitle={draftTitle}
+        setDraftTitle={setDraftTitle}
+        draftUnitName={draftUnitName}
+        setDraftUnitName={setDraftUnitName}
+        showConfirmDetailsDialog={showConfirmDetailsDialog}
+        setShowConfirmDetailsDialog={setShowConfirmDetailsDialog}
+        showClearAllDialog={showClearAllDialog}
+        setShowClearAllDialog={setShowClearAllDialog}
+        showDeleteTrackerDialog={showDeleteTrackerDialog}
+        setShowDeleteTrackerDialog={setShowDeleteTrackerDialog}
+        onUpdateTracker={onUpdateTracker}
+        onDeleteTracker={onDeleteTracker}
+        onConfirmClearAll={handleClearAll}
+      />
     </div>
   );
 }
